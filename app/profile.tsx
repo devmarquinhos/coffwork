@@ -6,48 +6,78 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { User, Mail, MapPin, LogOut, Edit3 } from "lucide-react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  User as UserIcon,
+  Mail,
+  MapPin,
+  LogOut,
+  Edit3,
+  LogIn,
+} from "lucide-react-native";
 import { COLORS } from "../src/styles/theme";
-
-const MOCK_USER = {
-  name: "Marquinhos",
-  email: "marquinhos@email.com",
-  city: "Dias d'Ávila",
-};
+import { useAuthStore } from "../src/store/useAuthStore";
 
 export default function Profile() {
-  const handleLogout = () => {
-    alert("Saindo da conta... Em breve limparemos o token aqui!");
+  const { user, logout, login } = useAuthStore();
+
+  const handleSimulateLogin = () => {
+    login(
+      {
+        id: "123",
+        name: "Marquinhos",
+        email: "marquinhos@coffwork.com",
+        city: "Dias d'Ávila",
+        role: "USER",
+      },
+      "token-jwt-test",
+    );
   };
+
+  if (!user) {
+    return (
+      <SafeAreaView
+        style={[
+          styles.safeArea,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <Text style={styles.sectionTitle}>Você não está logado.</Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={handleSimulateLogin}
+        >
+          <LogIn color={COLORS.white} size={20} />
+          <Text style={styles.loginButtonText}>Fazer login</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Meu Perfil</Text>
         </View>
 
-        {/* user card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>{MOCK_USER.name.charAt(0)}</Text>
+            <Text style={styles.avatarText}>{user.name.charAt(0)}</Text>
           </View>
-          <Text style={styles.userName}>{MOCK_USER.name}</Text>
-          <Text style={styles.userEmail}>{MOCK_USER.email}</Text>
+          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
         </View>
 
-        {/* details */}
         <Text style={styles.sectionTitle}>Meus Dados</Text>
         <View style={styles.infoContainer}>
           <View style={styles.infoRow}>
             <View style={styles.infoIcon}>
-              <User color={COLORS.mediumBrown} size={20} />
+              <UserIcon color={COLORS.mediumBrown} size={20} />
             </View>
             <View>
               <Text style={styles.infoLabel}>Nome Completo</Text>
-              <Text style={styles.infoValue}>{MOCK_USER.name}</Text>
+              <Text style={styles.infoValue}>{user.name}</Text>
             </View>
           </View>
 
@@ -59,7 +89,7 @@ export default function Profile() {
             </View>
             <View>
               <Text style={styles.infoLabel}>E-mail</Text>
-              <Text style={styles.infoValue}>{MOCK_USER.email}</Text>
+              <Text style={styles.infoValue}>{user.email}</Text>
             </View>
           </View>
 
@@ -71,12 +101,11 @@ export default function Profile() {
             </View>
             <View>
               <Text style={styles.infoLabel}>Cidade</Text>
-              <Text style={styles.infoValue}>{MOCK_USER.city}</Text>
+              <Text style={styles.infoValue}>{user.city}</Text>
             </View>
           </View>
         </View>
 
-        {/* actions */}
         <Text style={styles.sectionTitle}>Ações</Text>
 
         <TouchableOpacity
@@ -87,9 +116,10 @@ export default function Profile() {
           <Text style={styles.actionButtonText}>Editar Perfil</Text>
         </TouchableOpacity>
 
+        {/* logout btn */}
         <TouchableOpacity
           style={[styles.actionButton, styles.logoutButton]}
-          onPress={handleLogout}
+          onPress={logout}
         >
           <LogOut color="#DC2626" size={20} />
           <Text style={styles.logoutButtonText}>Sair da Conta</Text>
@@ -104,7 +134,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24 },
   header: { paddingTop: 20, paddingBottom: 24 },
   headerTitle: { fontSize: 28, fontWeight: "bold", color: COLORS.black },
-
   profileCard: { alignItems: "center", marginBottom: 40 },
   avatarCircle: {
     width: 100,
@@ -123,7 +152,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   userEmail: { fontSize: 16, color: COLORS.darkBrown },
-
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -153,7 +181,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.05)",
     marginVertical: 16,
   },
-
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -172,6 +199,20 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     fontSize: 16,
     color: "#DC2626",
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  loginButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.mediumBrown,
+    padding: 16,
+    borderRadius: 16,
+    marginTop: 20,
+  },
+  loginButtonText: {
+    fontSize: 16,
+    color: COLORS.white,
     fontWeight: "600",
     marginLeft: 12,
   },
