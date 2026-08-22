@@ -27,20 +27,15 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const data = await authService.login(email, password);
-      
-      // 1. Diagnóstico: Mostra no terminal do Expo o que o Java devolveu
       console.log("Resposta do Spring Boot:", data);
 
-      // 2. Trava de segurança: garante que o token existe antes de salvar
       if (!data || !data.token) {
         alert("Erro: O backend não devolveu o token JWT.");
         return;
       }
 
-      // 3. Salva no estado global
       setLogin(data.user, data.token);
 
-      // 4. Força a substituição da rota atual pela Home, ignorando o histórico de Tabs
       router.replace("/");
       
     } catch (error) {

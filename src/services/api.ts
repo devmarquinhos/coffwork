@@ -23,16 +23,12 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().token;
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(
@@ -40,11 +36,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.log('Sessão inválida detectada. Deslogando e redirecionando.');
-
+    if (error.response && error.response.status === 401) {
+      console.log('Sessão expirada ou token inválido. Deslogando.');
+      
       useAuthStore.getState().logout();
-
     }
     
     return Promise.reject(error);
