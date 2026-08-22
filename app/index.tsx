@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,9 +12,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../src/styles/theme";
-import { useRouter, Href } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import { Heart, MapPin, Star } from "lucide-react-native";
 import { useAuthStore } from "../src/store/useAuthStore";
-import { CoffeeShop, coffeeService } from "@/services/coffeeService";
+import { CoffeeShop, coffeeService } from "../src/services/coffeeService";
 import { favoriteService } from "../src/services/favoriteService";
 
 const CONTEXTS = ["Estudar", "Trabalhar", "Social", "Café Especial"];
@@ -35,34 +36,44 @@ export default function Home() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCoffees = async () => {
-      setLoading(true);
-      try {
-        const backendContext = CONTEXT_MAP[activeContext];
-        const data = await coffeeService.getByContext(backendContext);
-        setCoffees(data);
-      } catch (error) {
-        alert("Erro ao carregar cafeterias.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
 
-    const fetchFavorites = async () => {
-      if (!user) return;
-      try {
-        const myFavs = await favoriteService.getMyFavorites();
+      const fetchCoffees = async () => {
+        setLoading(true);
+        try {
+          const backendContext = CONTEXT_MAP[activeContext];
+          const data = await coffeeService.getByContext(backendContext);
+          if (isActive) setCoffees(data);
+        } catch (error) {
+          console.log("Erro ao carregar cafeterias:", error);
+        } finally {
+          if (isActive) setLoading(false);
+        }
+      };
 
-        setFavoriteIds(myFavs.map((f) => f.coffeeShopId));
-      } catch (error) {
-        console.log("Erro ao carregar favoritos da API");
-      }
-    };
+      const fetchFavorites = async () => {
+        if (!user) {
+          if (isActive) setFavoriteIds([]);
+          return;
+        }
+        try {
+          const myFavs = await favoriteService.getMyFavorites();
+          if (isActive) setFavoriteIds(myFavs.map((f) => f.coffeeShopId));
+        } catch (error) {
+          console.log("Erro ao carregar favoritos da API na Home");
+        }
+      };
 
-    fetchCoffees();
-    fetchFavorites();
-  }, [activeContext, user]);
+      fetchCoffees();
+      fetchFavorites();
+
+      return () => {
+        isActive = false;
+      };
+    }, [activeContext, user]),
+  );
 
   const handleFavoriteClick = async (coffeeId: string) => {
     if (!user) {
@@ -72,7 +83,6 @@ export default function Home() {
     }
 
     const isFavorited = favoriteIds.includes(coffeeId);
-
     if (isFavorited) {
       setFavoriteIds((prev) => prev.filter((id) => id !== coffeeId));
     } else {
@@ -86,7 +96,8 @@ export default function Home() {
         await favoriteService.addFavorite(coffeeId);
       }
     } catch (error) {
-      alert("Não foi possível atualizar o favorito.");
+      console.log("Erro ao favoritar:", error);
+
       if (isFavorited) {
         setFavoriteIds((prev) => [...prev, coffeeId]);
       } else {
@@ -95,56 +106,69 @@ export default function Home() {
     }
   };
 
-  const renderCoffeeCard = ({ item }: { item: CoffeeShop }) => (
-    <TouchableOpacity
-      style={styles.cardContainer}
-      activeOpacity={0.9}
-      onPress={() =>
-        router.push({ pathname: "/details/[id]", params: { id: item.id } })
-      }
-    >
-      <ImageBackground
-        source={{ uri: item.image }}
-        style={styles.cardImage}
-        imageStyle={styles.cardImageStyle}
-      >
-        {/* favorite icon */}
-        <TouchableOpacity
-          style={styles.favoriteButton}
-          onPress={() => handleFavoriteClick(item.id)}
-          activeOpacity={0.7}
-        >
-          <Text style={{ fontSize: 16 }}>
-            {favoriteIds.includes(item.id) ? "❤️" : "🤍"}
-          </Text>
-        </TouchableOpacity>
+  const renderCoffeeCard = ({ item }: { item: CoffeeShop }) => {
+    const isFavorited = favoriteIds.includes(item.id);
 
-        {/* dark overlay */}
-        <View style={styles.cardContent}>
-          <View>
-            <Text style={styles.cardTitle}>{item.name}</Text>
-            <Text style={styles.cardSubtitle}>📍 {item.location}</Text>
+    return (
+      <TouchableOpacity
+        style={styles.cardContainer}
+        activeOpacity={0.9}
+        onPress={() =>
+          router.push({ pathname: "/details/[id]", params: { id: item.id } })
+        }
+      >
+        <ImageBackground
+          source={{ uri: item.image }}
+          style={styles.cardImage}
+          imageStyle={styles.cardImageStyle}
+        >
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={() => handleFavoriteClick(item.id)}
+            activeOpacity={0.7}
+          >
+            <Heart
+              color={isFavorited ? COLORS.mediumBrown : COLORS.black}
+              fill={isFavorited ? COLORS.mediumBrown : "transparent"}
+              size={22}
+            />
+          </TouchableOpacity>
+
+          <View style={styles.cardContent}>
+            <View>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+              <View style={styles.locationContainer}>
+                <MapPin color={COLORS.cream} size={14} />
+                <Text style={styles.cardSubtitle}>{item.location}</Text>
+              </View>
+            </View>
+
+            <View style={styles.scoreBadge}>
+              <Star
+                color={COLORS.darkBrown}
+                fill={COLORS.darkBrown}
+                size={12}
+              />
+              <Text style={styles.scoreText}>{item.score}</Text>
+            </View>
           </View>
-          <View style={styles.scoreBadge}>
-            <Text style={styles.scoreText}>⭐ {item.score}</Text>
-          </View>
-        </View>
-      </ImageBackground>
-    </TouchableOpacity>
-  );
+        </ImageBackground>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.cream} />
 
       <View style={styles.container}>
-        {/* header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>Olá, Marquinhos 👋</Text>
+          <Text style={styles.greeting}>
+            Olá{user ? `, ${user.name}` : ""} 👋
+          </Text>
           <Text style={styles.subtitle}>Escolha seu contexto de hoje</Text>
         </View>
 
-        {/* filters */}
         <View style={styles.pillsContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {CONTEXTS.map((context) => {
@@ -254,12 +278,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 16,
     right: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     width: 40,
     height: 40,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 10,
   },
   cardContent: {
     flexDirection: "row",
@@ -276,12 +301,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 4,
   },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   cardSubtitle: {
     color: COLORS.cream,
     fontSize: 14,
     fontWeight: "500",
   },
   scoreBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     paddingHorizontal: 12,
     paddingVertical: 6,
