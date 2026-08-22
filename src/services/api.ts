@@ -1,10 +1,19 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
+import { Platform } from 'react-native';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+const getBaseUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_URL_PHYSICAL) {
+    return process.env.EXPO_PUBLIC_API_URL_PHYSICAL;
+  }
+
+  return Platform.OS === 'android' 
+    ? process.env.EXPO_PUBLIC_API_URL_ANDROID 
+    : process.env.EXPO_PUBLIC_API_URL_IOS;
+};
 
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getBaseUrl(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -31,10 +40,11 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      console.log('Sessão expirada. Deslogando usuário.');
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      console.log('Sessão inválida detectada. Deslogando e redirecionando.');
 
       useAuthStore.getState().logout();
+
     }
     
     return Promise.reject(error);

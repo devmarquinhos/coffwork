@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   User as UserIcon,
   Mail,
@@ -17,41 +17,13 @@ import {
 } from "lucide-react-native";
 import { COLORS } from "../src/styles/theme";
 import { useAuthStore } from "../src/store/useAuthStore";
+import { Redirect } from "expo-router";
 
 export default function Profile() {
-  const { user, logout, login } = useAuthStore();
-
-  const handleSimulateLogin = () => {
-    login(
-      {
-        id: "123",
-        name: "Marquinhos",
-        email: "marquinhos@coffwork.com",
-        city: "Dias d'Ávila",
-        role: "USER",
-      },
-      "token-jwt-test",
-    );
-  };
+  const { user, logout } = useAuthStore();
 
   if (!user) {
-    return (
-      <SafeAreaView
-        style={[
-          styles.safeArea,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
-        <Text style={styles.sectionTitle}>Você não está logado.</Text>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={handleSimulateLogin}
-        >
-          <LogIn color={COLORS.white} size={20} />
-          <Text style={styles.loginButtonText}>Fazer login</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
+    return <Redirect href="/login" />;
   }
 
   return (
@@ -199,20 +171,6 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     fontSize: 16,
     color: "#DC2626",
-    fontWeight: "600",
-    marginLeft: 12,
-  },
-  loginButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.mediumBrown,
-    padding: 16,
-    borderRadius: 16,
-    marginTop: 20,
-  },
-  loginButtonText: {
-    fontSize: 16,
-    color: COLORS.white,
     fontWeight: "600",
     marginLeft: 12,
   },

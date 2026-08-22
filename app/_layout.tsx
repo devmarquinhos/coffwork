@@ -1,7 +1,7 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { Home, Heart, User } from 'lucide-react-native';
-import { COLORS } from '../src/styles/theme';
+import React from "react";
+import { Tabs } from "expo-router";
+import { Home, Heart, User } from "lucide-react-native";
+import { COLORS } from "../src/styles/theme";
 
 export default function Layout() {
   return (
@@ -9,11 +9,11 @@ export default function Layout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.mediumBrown,
-        tabBarInactiveTintColor: '#A0988A',
+        tabBarInactiveTintColor: "#A0988A",
         tabBarStyle: {
           backgroundColor: COLORS.white,
           borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0,0.05)',
+          borderTopColor: "rgba(0,0,0,0.05)",
           elevation: 0,
           shadowOpacity: 0,
           height: 60,
@@ -25,21 +25,21 @@ export default function Layout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: "Home",
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="favorites"
         options={{
-          title: 'Favoritos',
+          title: "Favoritos",
           tabBarIcon: ({ color, size }) => <Heart color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Perfil',
+          title: "Perfil",
           tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />
@@ -47,14 +47,21 @@ export default function Layout() {
         name="details/[id]"
         options={{
           href: null,
-          tabBarStyle: { display: 'none' },
+          tabBarStyle: { display: "none" },
         }}
       />
-    <Tabs.Screen
+      <Tabs.Screen
         name="review/[id]"
         options={{
           href: null,
-          tabBarStyle: { display: 'none' },
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="login"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
         }}
       />
     </Tabs>

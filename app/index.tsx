@@ -1,55 +1,123 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  StatusBar, 
-  ScrollView, 
-  TouchableOpacity, 
-  ImageBackground, 
-  FlatList 
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS } from '../src/styles/theme';
-import { useRouter, Href } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../src/styles/theme";
+import { useRouter, Href } from "expo-router";
+import { useAuthStore } from "../src/store/useAuthStore";
+import { CoffeeShop, coffeeService } from "@/services/coffeeService";
+import { favoriteService } from "../src/services/favoriteService";
 
-const CONTEXTS = ['Estudar', 'Trabalhar', 'Social', 'Café Especial'];
+const CONTEXTS = ["Estudar", "Trabalhar", "Social", "Café Especial"];
 
-const MOCK_COFFEES = [
-  { 
-    id: '1', 
-    name: 'Cravo Camelia', 
-    score: '4.9', 
-    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800',
-    location: 'Dias dÁvila'
-  },
-  { 
-    id: '2', 
-    name: 'Terraço Café', 
-    score: '4.7', 
-    image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=800',
-    location: 'Centro'
-  },
-];
+const CONTEXT_MAP: Record<string, string> = {
+  Estudar: "STUDY",
+  Trabalhar: "REMOTE_WORK",
+  Social: "SOCIAL",
+  "Café Especial": "COFFEE_TASTING",
+};
 
 export default function Home() {
   const router = useRouter();
-  const [activeContext, setActiveContext] = useState('Estudar');
+  const { user } = useAuthStore();
 
-  const renderCoffeeCard = ({ item }: { item: typeof MOCK_COFFEES[0] }) => (
-    <TouchableOpacity 
-      style={styles.cardContainer} 
+  const [activeContext, setActiveContext] = useState("Estudar");
+  const [coffees, setCoffees] = useState<CoffeeShop[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCoffees = async () => {
+      setLoading(true);
+      try {
+        const backendContext = CONTEXT_MAP[activeContext];
+        const data = await coffeeService.getByContext(backendContext);
+        setCoffees(data);
+      } catch (error) {
+        alert("Erro ao carregar cafeterias.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchFavorites = async () => {
+      if (!user) return;
+      try {
+        const myFavs = await favoriteService.getMyFavorites();
+
+        setFavoriteIds(myFavs.map((f) => f.coffeeShopId));
+      } catch (error) {
+        console.log("Erro ao carregar favoritos da API");
+      }
+    };
+
+    fetchCoffees();
+    fetchFavorites();
+  }, [activeContext, user]);
+
+  const handleFavoriteClick = async (coffeeId: string) => {
+    if (!user) {
+      alert("Faça login para salvar suas cafeterias favoritas!");
+      router.push("/login");
+      return;
+    }
+
+    const isFavorited = favoriteIds.includes(coffeeId);
+
+    if (isFavorited) {
+      setFavoriteIds((prev) => prev.filter((id) => id !== coffeeId));
+    } else {
+      setFavoriteIds((prev) => [...prev, coffeeId]);
+    }
+
+    try {
+      if (isFavorited) {
+        await favoriteService.removeFavorite(coffeeId);
+      } else {
+        await favoriteService.addFavorite(coffeeId);
+      }
+    } catch (error) {
+      alert("Não foi possível atualizar o favorito.");
+      if (isFavorited) {
+        setFavoriteIds((prev) => [...prev, coffeeId]);
+      } else {
+        setFavoriteIds((prev) => prev.filter((id) => id !== coffeeId));
+      }
+    }
+  };
+
+  const renderCoffeeCard = ({ item }: { item: CoffeeShop }) => (
+    <TouchableOpacity
+      style={styles.cardContainer}
       activeOpacity={0.9}
-      onPress={() => router.push(`/details/${item.id}` as Href)}>
+      onPress={() =>
+        router.push({ pathname: "/details/[id]", params: { id: item.id } })
+      }
+    >
       <ImageBackground
         source={{ uri: item.image }}
         style={styles.cardImage}
         imageStyle={styles.cardImageStyle}
       >
         {/* favorite icon */}
-        <View style={styles.favoriteButton}>
-          <Text style={{ fontSize: 16 }}>🤍</Text>
-        </View>
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={() => handleFavoriteClick(item.id)}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 16 }}>
+            {favoriteIds.includes(item.id) ? "❤️" : "🤍"}
+          </Text>
+        </TouchableOpacity>
 
         {/* dark overlay */}
         <View style={styles.cardContent}>
@@ -68,7 +136,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.cream} />
-      
+
       <View style={styles.container}>
         {/* header */}
         <View style={styles.header}>
@@ -82,12 +150,14 @@ export default function Home() {
             {CONTEXTS.map((context) => {
               const isActive = activeContext === context;
               return (
-                <TouchableOpacity 
-                  key={context} 
+                <TouchableOpacity
+                  key={context}
                   style={[styles.pill, isActive && styles.pillActive]}
                   onPress={() => setActiveContext(context)}
                 >
-                  <Text style={[styles.pillText, isActive && styles.pillTextActive]}>
+                  <Text
+                    style={[styles.pillText, isActive && styles.pillTextActive]}
+                  >
                     {context}
                   </Text>
                 </TouchableOpacity>
@@ -96,14 +166,19 @@ export default function Home() {
           </ScrollView>
         </View>
 
-        {/* coffeeshop list */}
-        <FlatList
-          data={MOCK_COFFEES}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCoffeeCard}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-        />
+        {loading ? (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <ActivityIndicator size="large" color={COLORS.mediumBrown} />
+          </View>
+        ) : (
+          <FlatList
+            data={coffees}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCoffeeCard}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -124,12 +199,12 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: COLORS.black,
   },
   subtitle: {
     fontSize: 16,
-    color: COLORS.darkBrown, 
+    color: COLORS.darkBrown,
     marginTop: 4,
   },
   pillsContainer: {
@@ -143,14 +218,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     marginRight: 12,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   pillActive: {
     backgroundColor: COLORS.mediumBrown,
   },
   pillText: {
     color: COLORS.darkBrown,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   pillTextActive: {
     color: COLORS.white,
@@ -162,59 +237,59 @@ const styles = StyleSheet.create({
   cardContainer: {
     height: 280,
     marginBottom: 24,
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
     borderRadius: 24,
     backgroundColor: COLORS.cream,
   },
   cardImage: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     borderRadius: 24,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardImageStyle: {
     borderRadius: 24,
   },
   favoriteButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 16,
     right: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   cardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
     padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
   },
   cardTitle: {
     color: COLORS.white,
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   cardSubtitle: {
     color: COLORS.cream,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   scoreBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
   },
   scoreText: {
     color: COLORS.darkBrown,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14,
   },
 });
