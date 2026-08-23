@@ -10,7 +10,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../src/styles/theme";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Heart, MapPin, Star } from "lucide-react-native";
@@ -30,6 +30,7 @@ const CONTEXT_MAP: Record<string, string> = {
 export default function Home() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   const [activeContext, setActiveContext] = useState("Estudar");
   const [coffees, setCoffees] = useState<CoffeeShop[]>([]);
@@ -158,7 +159,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.cream} />
 
       <View style={styles.container}>
@@ -204,7 +205,7 @@ export default function Home() {
           />
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    marginTop: 20,
+    marginTop: 12,
     marginBottom: 20,
   },
   greeting: {

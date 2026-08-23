@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  Modal,
+  TextInput,
 } from "react-native";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import {
@@ -18,20 +20,79 @@ import {
   Plug,
   MapPin,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../src/styles/theme";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { favoriteService } from "../../src/services/favoriteService";
 import { coffeeService } from "../../src/services/coffeeService";
 import { CoffeeShopDetails } from "@/types/coffee";
 
+const CONTEXT_OPTIONS = [
+  { label: "Estudar", value: "STUDY" },
+  { label: "Trabalhar", value: "REMOTE_WORK" },
+  { label: "Social", value: "SOCIAL" },
+  { label: "Café Especial", value: "COFFEE_TASTING" },
+];
+
+const NOISE_OPTIONS = [
+  { label: "Baixo", value: "LOW" },
+  { label: "Médio", value: "MEDIUM" },
+  { label: "Alto", value: "HIGH" },
+];
+
 export default function CoffeeDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuthStore();
+  const insets = useSafeAreaInsets();
+  
   const [coffeeData, setCoffeeData] = useState<CoffeeShopDetails | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewStep, setReviewStep] = useState(1);
+  const [reviewForm, setReviewForm] = useState({
+    context: "",
+    rating: 0,
+    hasWifi: null as boolean | null,
+    hasPowerOutlets: null as boolean | null,
+    noiseLevel: "",
+    comment: "",
+  });
+
+  const updateForm = (field: keyof typeof reviewForm, value: any) => {
+    setReviewForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const nextStep = () => {
+    if (reviewStep === 1 && (!reviewForm.context || reviewForm.rating === 0)) {
+      alert("Selecione o contexto e a nota para continuar.");
+      return;
+    }
+    setReviewStep((prev) => Math.min(prev + 1, 3));
+  };
+  
+  const prevStep = () => setReviewStep((prev) => Math.max(prev - 1, 1));
+  
+  const closeReviewModal = () => {
+    setIsReviewModalOpen(false);
+    setReviewStep(1);
+    setReviewForm({
+      context: "",
+      rating: 0,
+      hasWifi: null,
+      hasPowerOutlets: null,
+      noiseLevel: "",
+      comment: "",
+    });
+  };
+
+  const submitReview = async () => {
+    console.log("Enviando review:", reviewForm);
+    alert("Avaliação enviada com sucesso!");
+    closeReviewModal();
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -63,9 +124,7 @@ export default function CoffeeDetails() {
             );
             setIsFavorited(alreadyFavorited);
           }
-        } catch (error) {
-          console.log("Erro silencioso ao checar favorito no detalhe.");
-        }
+        } catch (error) {}
       };
 
       fetchCoffeeDetails();
@@ -96,7 +155,6 @@ export default function CoffeeDetails() {
         await favoriteService.addFavorite(coffeeId);
       }
     } catch (error) {
-      console.log("Erro ao favoritar no detalhe:", error);
       setIsFavorited(currentState);
     }
   };
@@ -209,11 +267,207 @@ export default function CoffeeDetails() {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => router.push(`/review/${id}` as any)}
+          onPress={() => {
+            if (!user) {
+              alert("Faça login para avaliar!");
+              router.push("/login");
+              return;
+            }
+            setIsReviewModalOpen(true);
+          }}
         >
           <Text style={styles.primaryButtonText}>Avaliar Experiência</Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isReviewModalOpen}
+        onRequestClose={closeReviewModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.bottomSheet, { paddingBottom: Math.max(insets.bottom, 24) }]}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={closeReviewModal}>
+                <Text style={styles.cancelText}>Cancelar</Text>
+              </TouchableOpacity>
+              <Text style={styles.stepIndicator}>Passo {reviewStep} de 3</Text>
+            </View>
+
+            {reviewStep === 1 && (
+              <View style={styles.stepContainer}>
+                <Text style={styles.stepTitle}>Como foi sua experiência?</Text>
+                <Text style={styles.stepSubtitle}>
+                  O que você foi fazer no {coffeeData?.name}?
+                </Text>
+
+                <View style={styles.optionsWrap}>
+                  {CONTEXT_OPTIONS.map((ctx) => (
+                    <TouchableOpacity
+                      key={ctx.value}
+                      style={[
+                        styles.optionPill,
+                        reviewForm.context === ctx.value && styles.optionPillActive,
+                      ]}
+                      onPress={() => updateForm("context", ctx.value)}
+                    >
+                      <Text
+                        style={[
+                          styles.optionPillText,
+                          reviewForm.context === ctx.value && styles.optionPillTextActive,
+                        ]}
+                      >
+                        {ctx.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <Text style={styles.fieldLabel}>Nota Geral</Text>
+                <View style={styles.starsContainer}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <TouchableOpacity key={star} onPress={() => updateForm("rating", star)}>
+                      <Star
+                        size={40}
+                        color={reviewForm.rating >= star ? COLORS.mediumBrown : "#D1D5DB"}
+                        fill={reviewForm.rating >= star ? COLORS.mediumBrown : "transparent"}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={nextStep}
+                >
+                  <Text style={styles.primaryButtonText}>Continuar</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {reviewStep === 2 && (
+              <View style={styles.stepContainer}>
+                <Text style={styles.stepTitle}>Estrutura do Local</Text>
+                <Text style={styles.stepSubtitle}>
+                  Isso ajuda outros usuários a se prepararem.
+                </Text>
+
+                <View style={styles.fieldsContainer}>
+                  <Text style={styles.fieldLabel}>O local possui Wi-Fi?</Text>
+                  <View style={styles.binaryOptionsRow}>
+                    <TouchableOpacity
+                      style={[styles.binaryButton, reviewForm.hasWifi === true && styles.binaryButtonActive]}
+                      onPress={() => updateForm("hasWifi", true)}
+                    >
+                      <Text style={[styles.binaryButtonText, reviewForm.hasWifi === true && styles.binaryButtonTextActive]}>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.binaryButton, reviewForm.hasWifi === false && styles.binaryButtonActive]}
+                      onPress={() => updateForm("hasWifi", false)}
+                    >
+                      <Text style={[styles.binaryButtonText, reviewForm.hasWifi === false && styles.binaryButtonTextActive]}>Não</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text style={styles.fieldLabel}>O local possui tomadas acessíveis?</Text>
+                  <View style={styles.binaryOptionsRow}>
+                    <TouchableOpacity
+                      style={[styles.binaryButton, reviewForm.hasPowerOutlets === true && styles.binaryButtonActive]}
+                      onPress={() => updateForm("hasPowerOutlets", true)}
+                    >
+                      <Text style={[styles.binaryButtonText, reviewForm.hasPowerOutlets === true && styles.binaryButtonTextActive]}>Sim</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.binaryButton, reviewForm.hasPowerOutlets === false && styles.binaryButtonActive]}
+                      onPress={() => updateForm("hasPowerOutlets", false)}
+                    >
+                      <Text style={[styles.binaryButtonText, reviewForm.hasPowerOutlets === false && styles.binaryButtonTextActive]}>Não</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text style={styles.fieldLabel}>Nível de ruído</Text>
+                  <View style={styles.optionsWrap}>
+                    {NOISE_OPTIONS.map((noise) => (
+                      <TouchableOpacity
+                        key={noise.value}
+                        style={[
+                          styles.optionPill,
+                          reviewForm.noiseLevel === noise.value && styles.optionPillActive,
+                        ]}
+                        onPress={() => updateForm("noiseLevel", noise.value)}
+                      >
+                        <Text
+                          style={[
+                            styles.optionPillText,
+                            reviewForm.noiseLevel === noise.value && styles.optionPillTextActive,
+                          ]}
+                        >
+                          {noise.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={styles.modalButtonRow}>
+                  <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={prevStep}
+                  >
+                    <Text style={styles.secondaryButtonText}>Voltar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.primaryButton, { flex: 1 }]}
+                    onPress={nextStep}
+                  >
+                    <Text style={styles.primaryButtonText}>Continuar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+
+            {reviewStep === 3 && (
+              <View style={styles.stepContainer}>
+                <Text style={styles.stepTitle}>Algo a acrescentar?</Text>
+                <Text style={styles.stepSubtitle}>
+                  Conte um pouco mais sobre o atendimento ou o café (Opcional).
+                </Text>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.textArea}
+                    placeholder="Deixe seu comentário aqui..."
+                    placeholderTextColor="#9CA3AF"
+                    multiline
+                    numberOfLines={5}
+                    value={reviewForm.comment}
+                    onChangeText={(text) => updateForm("comment", text)}
+                    textAlignVertical="top"
+                  />
+                </View>
+
+                <View style={styles.modalButtonRow}>
+                  <TouchableOpacity
+                    style={styles.secondaryButton}
+                    onPress={prevStep}
+                  >
+                    <Text style={styles.secondaryButtonText}>Voltar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.primaryButton, { flex: 1 }]}
+                    onPress={submitReview}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      Publicar Avaliação
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -317,4 +571,137 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   primaryButtonText: { color: COLORS.cream, fontSize: 16, fontWeight: "bold" },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  bottomSheet: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: 24,
+    minHeight: 400,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  cancelText: {
+    color: "#EF4444",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  stepIndicator: {
+    color: COLORS.darkBrown,
+    fontWeight: "bold",
+  },
+  stepContainer: {},
+  stepTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.black,
+    marginBottom: 8,
+  },
+  stepSubtitle: {
+    fontSize: 15,
+    color: COLORS.darkBrown,
+    marginBottom: 24,
+  },
+  modalButtonRow: {
+    flexDirection: "row",
+    gap: 16,
+    marginTop: 16,
+  },
+  secondaryButton: {
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    backgroundColor: COLORS.cream,
+    alignItems: "center",
+  },
+  secondaryButtonText: {
+    color: COLORS.darkBrown,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  optionsWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginBottom: 24,
+  },
+  optionPill: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    backgroundColor: COLORS.white,
+  },
+  optionPillActive: {
+    backgroundColor: COLORS.mediumBrown,
+    borderColor: COLORS.mediumBrown,
+  },
+  optionPillText: {
+    color: COLORS.darkBrown,
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  optionPillTextActive: {
+    color: COLORS.white,
+  },
+  fieldLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: COLORS.black,
+    marginBottom: 12,
+  },
+  starsContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 40,
+  },
+  fieldsContainer: {
+    marginBottom: 16,
+  },
+  binaryOptionsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 24,
+  },
+  binaryButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
+  },
+  binaryButtonActive: {
+    backgroundColor: COLORS.mediumBrown,
+    borderColor: COLORS.mediumBrown,
+  },
+  binaryButtonText: {
+    color: COLORS.darkBrown,
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  binaryButtonTextActive: {
+    color: COLORS.white,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  textArea: {
+    backgroundColor: COLORS.cream,
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 16,
+    color: COLORS.black,
+    minHeight: 120,
+  },
 });
