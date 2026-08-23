@@ -15,8 +15,8 @@ import {
   Edit3,
   LogIn,
 } from "lucide-react-native";
-import { COLORS } from "../src/styles/theme";
-import { useAuthStore } from "../src/store/useAuthStore";
+import { COLORS } from "../../src/styles/theme";
+import { useAuthStore } from "../../src/store/useAuthStore";
 import { Redirect } from "expo-router";
 
 export default function Profile() {
@@ -88,7 +88,6 @@ export default function Profile() {
           <Text style={styles.actionButtonText}>Editar Perfil</Text>
         </TouchableOpacity>
 
-        {/* logout btn */}
         <TouchableOpacity
           style={[styles.actionButton, styles.logoutButton]}
           onPress={logout}

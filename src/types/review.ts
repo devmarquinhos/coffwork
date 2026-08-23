@@ -23,3 +23,13 @@ export interface ReviewFormState {
   baristaServiceRating: number;
   priceFairnessRating: number;
 }
+
+export interface ReviewResponse {
+  id: number;
+  userId: string;
+  userName: string;
+  context: VisitContextType;
+  overallRating: number;
+  comment: string | null;
+  createdAt: string;
+}

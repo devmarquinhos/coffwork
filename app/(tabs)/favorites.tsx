@@ -11,12 +11,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Heart, Coffee } from "lucide-react-native";
-import { COLORS } from "../src/styles/theme";
+import { COLORS } from "../../src/styles/theme";
 import {
   favoriteService,
   FavoriteResponse,
-} from "../src/services/favoriteService";
-import { useAuthStore } from "../src/store/useAuthStore";
+} from "../../src/services/favoriteService";
+import { useAuthStore } from "../../src/store/useAuthStore";
 
 export default function Favorites() {
   const router = useRouter();

@@ -1,69 +1,22 @@
-import React from "react";
-import { Tabs } from "expo-router";
-import { Home, Heart, User } from "lucide-react-native";
-import { COLORS } from "../src/styles/theme";
+import { useEffect } from "react";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { useAuthStore } from "../src/store/useAuthStore";
 
-export default function Layout() {
-  return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.mediumBrown,
-        tabBarInactiveTintColor: "#A0988A",
-        tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopWidth: 1,
-          borderTopColor: "rgba(0,0,0,0.05)",
-          elevation: 0,
-          shadowOpacity: 0,
-          height: 60,
-          paddingBottom: 10,
-          paddingTop: 5,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          title: "Favoritos",
-          tabBarIcon: ({ color, size }) => <Heart color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="details/[id]"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="review/[id]"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="login"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-    </Tabs>
-  );
+export default function RootLayout() {
+  const { user } = useAuthStore();
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    const rootSegment = segments[0] as string;
+    const inAuthGroup = rootSegment === "(auth)";
+
+    if (!user && !inAuthGroup) {
+      router.replace("/(auth)/onboarding" as any);
+    } else if (user && inAuthGroup) {
+      router.replace("/(tabs)" as any);
+    }
+  }, [user, segments]);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

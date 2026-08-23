@@ -1,4 +1,3 @@
-// src/components/ReviewModal.tsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -13,6 +12,7 @@ import {
 import { Star } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../styles/theme";
+import { reviewModalStyles as styles } from "../styles/reviewModalStyles";
 import { ReviewFormState } from "../types/review";
 
 const CONTEXT_OPTIONS = [
@@ -324,7 +324,7 @@ export function ReviewModal({
             <View>
               <Text style={styles.stepTitle}>Algo a acrescentar?</Text>
               <Text style={styles.stepSubtitle}>
-                Conte um pouco mais sobre o atendimento ou o café (Opcional).
+                Conte um pouco sobre o atendimento ou o café (Opcional).
               </Text>
               <View style={styles.inputContainer}>
                 <TextInput
@@ -361,106 +361,3 @@ export function ReviewModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  bottomSheet: {
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    padding: 24,
-    minHeight: 400,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  cancelText: { color: "#EF4444", fontWeight: "600", fontSize: 16 },
-  stepIndicator: { color: COLORS.darkBrown, fontWeight: "bold" },
-  stepTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: COLORS.black,
-    marginBottom: 8,
-  },
-  stepSubtitle: { fontSize: 15, color: COLORS.darkBrown, marginBottom: 24 },
-  modalButtonRow: { flexDirection: "row", gap: 16, marginTop: 16 },
-  secondaryButton: {
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    borderRadius: 30,
-    backgroundColor: COLORS.cream,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secondaryButtonText: {
-    color: COLORS.darkBrown,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  primaryButton: {
-    backgroundColor: COLORS.mediumBrown,
-    paddingVertical: 18,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonText: { color: COLORS.cream, fontSize: 16, fontWeight: "bold" },
-  optionsWrap: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 32,
-  },
-  optionPill: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: COLORS.white,
-  },
-  optionPillActive: {
-    backgroundColor: COLORS.mediumBrown,
-    borderColor: COLORS.mediumBrown,
-  },
-  optionPillText: { color: COLORS.darkBrown, fontWeight: "600", fontSize: 14 },
-  optionPillTextActive: { color: COLORS.white },
-  fieldLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: COLORS.black,
-    marginBottom: 12,
-  },
-  starsContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 40,
-    justifyContent: "center",
-  },
-  phaseTwoScroll: { maxHeight: 300, marginBottom: 16 },
-  subRatingContainer: { marginBottom: 24 },
-  subRatingLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: COLORS.black,
-    marginBottom: 12,
-  },
-  subStarsRow: { flexDirection: "row", gap: 8 },
-  subStarButton: { paddingRight: 4 },
-  inputContainer: { marginBottom: 24 },
-  textArea: {
-    backgroundColor: COLORS.cream,
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.black,
-    minHeight: 120,
-  },
-});

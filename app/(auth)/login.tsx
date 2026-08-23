@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { COLORS } from "../src/styles/theme";
-import { authService } from "../src/services/authService";
-import { useAuthStore } from "../src/store/useAuthStore";
+import { authService } from "../../src/services/authService";
+import { useAuthStore } from "../../src/store/useAuthStore";
+import { COLORS } from "../../src/styles/theme";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -37,7 +37,6 @@ export default function LoginScreen() {
       setLogin(data.user, data.token);
 
       router.replace("/");
-      
     } catch (error) {
       console.error("Erro no login:", error);
       alert("Falha ao fazer login. Verifique se a API está rodando.");
