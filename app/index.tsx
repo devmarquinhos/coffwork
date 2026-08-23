@@ -118,7 +118,7 @@ export default function Home() {
         }
       >
         <ImageBackground
-          source={{ uri: item.image }}
+          source={{ uri: item.coverImageUrl }}
           style={styles.cardImage}
           imageStyle={styles.cardImageStyle}
         >

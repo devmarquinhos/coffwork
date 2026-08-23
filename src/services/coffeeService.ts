@@ -1,3 +1,4 @@
+import { CoffeeShopDetails } from '@/types/coffee';
 import { api } from './api';
 
 export interface CoffeeShop {
@@ -5,7 +6,7 @@ export interface CoffeeShop {
   name: string;
   location: string;
   score: string;
-  image: string;
+  coverImageUrl: string;
 }
 
 export const coffeeService = {
@@ -19,5 +20,15 @@ export const coffeeService = {
       console.error('Erro ao buscar cafeterias:', error);
       throw error;
     }
-  }
+  },
+
+  async getById(id: string): Promise<CoffeeShopDetails> {
+    try {
+      const response = await api.get<CoffeeShopDetails>(`/coffee-shops/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da cafeteria:', error);
+      throw error;
+    }
+  },
 };

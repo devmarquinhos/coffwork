@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import {
@@ -16,31 +17,41 @@ import {
   Wifi,
   Plug,
   MapPin,
-} from "lucide-react-native"; // MapPin importado
+} from "lucide-react-native";
 import { COLORS } from "../../src/styles/theme";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { favoriteService } from "../../src/services/favoriteService";
+import { coffeeService } from "../../src/services/coffeeService";
+import { CoffeeShopDetails } from "@/types/coffee";
 
 export default function CoffeeDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuthStore();
+  const [coffeeData, setCoffeeData] = useState<CoffeeShopDetails | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [isFavorited, setIsFavorited] = useState(false);
-
-  const coffeeData = {
-    name: "Cravo Camelia",
-    score: "4.9",
-    description:
-      "Um ambiente aconchegante focado em doces artesanais e cafés especiais. Excelente iluminação natural, perfeito para um encontro social ou uma tarde de trabalho tranquilo.",
-    image:
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800",
-    location: "Dias d'Ávila",
-  };
 
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
+
+      const fetchCoffeeDetails = async () => {
+        if (!id) return;
+        setLoading(true);
+        try {
+          const data = await coffeeService.getById(id as string);
+          if (isActive) {
+            setCoffeeData(data);
+          }
+        } catch (error) {
+          alert("Não foi possível carregar os detalhes.");
+          router.back();
+        } finally {
+          if (isActive) setLoading(false);
+        }
+      };
 
       const checkFavoriteStatus = async () => {
         if (!user || !id) return;
@@ -50,14 +61,14 @@ export default function CoffeeDetails() {
             const alreadyFavorited = myFavs.some(
               (fav) => fav.coffeeShopId === id,
             );
-
             setIsFavorited(alreadyFavorited);
           }
         } catch (error) {
-          console.log("Erro ao adicionar cafeteria aos favoritos.", error);
+          console.log("Erro silencioso ao checar favorito no detalhe.");
         }
       };
 
+      fetchCoffeeDetails();
       checkFavoriteStatus();
 
       return () => {
@@ -86,10 +97,22 @@ export default function CoffeeDetails() {
       }
     } catch (error) {
       console.log("Erro ao favoritar no detalhe:", error);
-
       setIsFavorited(currentState);
     }
   };
+
+  if (loading || !coffeeData) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={COLORS.mediumBrown} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -100,12 +123,11 @@ export default function CoffeeDetails() {
       />
 
       <Image
-        source={{ uri: coffeeData.image }}
+        source={{ uri: coffeeData.coverImageUrl || coffeeData.coverImageUrl }}
         style={styles.heroImage}
         resizeMode="cover"
       />
 
-      {/* header nav buttons */}
       <View style={styles.topBar}>
         <TouchableOpacity
           style={styles.iconButton}
@@ -126,14 +148,12 @@ export default function CoffeeDetails() {
         </TouchableOpacity>
       </View>
 
-      {/* scroll view */}
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.transparentSpacer} />
 
-        {/* content */}
         <View style={styles.sheetContainer}>
           <View style={styles.headerRow}>
             <View>
@@ -155,23 +175,28 @@ export default function CoffeeDetails() {
             </View>
           </View>
 
-          {/* tags */}
           <View style={styles.tagsContainer}>
-            <View style={styles.tag}>
-              <Wifi color={COLORS.darkBrown} size={16} />
-              <Text style={styles.tagText}>Wi-Fi Rápido</Text>
-            </View>
-            <View style={styles.tag}>
-              <Plug color={COLORS.darkBrown} size={16} />
-              <Text style={styles.tagText}>Tomadas</Text>
-            </View>
+            {coffeeData.hasWifi !== false && (
+              <View style={styles.tag}>
+                <Wifi color={COLORS.darkBrown} size={16} />
+                <Text style={styles.tagText}>Wi-Fi Rápido</Text>
+              </View>
+            )}
+            {coffeeData.hasPowerOutlets !== false && (
+              <View style={styles.tag}>
+                <Plug color={COLORS.darkBrown} size={16} />
+                <Text style={styles.tagText}>Tomadas</Text>
+              </View>
+            )}
           </View>
 
-          {/* description */}
           <Text style={styles.sectionTitle}>Visão Geral</Text>
-          <Text style={styles.description}>{coffeeData.description}</Text>
+          <Text style={styles.description}>
+            {coffeeData.shortDescription ||
+              coffeeData.shortDescription ||
+              "Nenhuma descrição disponível."}
+          </Text>
 
-          {/* avaliações */}
           <Text style={styles.sectionTitle}>Avaliações Contextuais</Text>
           <View style={styles.placeholderReview}>
             <Text style={{ color: COLORS.mediumBrown }}>
@@ -181,7 +206,6 @@ export default function CoffeeDetails() {
         </View>
       </ScrollView>
 
-      {/* footer */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryButton}
@@ -195,16 +219,8 @@ export default function CoffeeDetails() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  heroImage: {
-    width: "100%",
-    height: 450,
-    position: "absolute",
-    top: 0,
-  },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  heroImage: { width: "100%", height: 450, position: "absolute", top: 0 },
   topBar: {
     position: "absolute",
     top: 50,
@@ -222,12 +238,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  scrollContainer: {
-    flex: 1,
-  },
-  transparentSpacer: {
-    height: 350,
-  },
+  scrollContainer: { flex: 1 },
+  transparentSpacer: { height: 350 },
   sheetContainer: {
     backgroundColor: COLORS.white,
     borderTopLeftRadius: 32,
@@ -247,15 +259,8 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginBottom: 4,
   },
-  locationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  location: {
-    fontSize: 14,
-    color: COLORS.darkBrown,
-  },
+  locationContainer: { flexDirection: "row", alignItems: "center", gap: 4 },
+  location: { fontSize: 14, color: COLORS.darkBrown },
   scoreBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -265,16 +270,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 4,
   },
-  scoreText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: COLORS.darkBrown,
-  },
-  tagsContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
-  },
+  scoreText: { fontSize: 16, fontWeight: "bold", color: COLORS.darkBrown },
+  tagsContainer: { flexDirection: "row", gap: 12, marginBottom: 24 },
   tag: {
     flexDirection: "row",
     alignItems: "center",
@@ -285,11 +282,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 8,
   },
-  tagText: {
-    color: COLORS.darkBrown,
-    fontWeight: "600",
-    fontSize: 13,
-  },
+  tagText: { color: COLORS.darkBrown, fontWeight: "600", fontSize: 13 },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -323,9 +316,5 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
   },
-  primaryButtonText: {
-    color: COLORS.cream,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+  primaryButtonText: { color: COLORS.cream, fontSize: 16, fontWeight: "bold" },
 });
