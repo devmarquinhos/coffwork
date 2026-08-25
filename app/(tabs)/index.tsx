@@ -2,9 +2,8 @@ import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   StatusBar,
-  ScrollView,
+  TextInput,
   TouchableOpacity,
   ImageBackground,
   FlatList,
@@ -14,40 +13,36 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../../src/styles/theme";
 import { homeStyles as styles } from "../../src/styles/homeStyles";
 import { useRouter, useFocusEffect } from "expo-router";
-import { Heart, MapPin, Star } from "lucide-react-native";
+import { Heart, MapPin, Star, Search } from "lucide-react-native";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { CoffeeShop, coffeeService } from "../../src/services/coffeeService";
 import { favoriteService } from "../../src/services/favoriteService";
-
-const CONTEXTS = ["Estudar", "Trabalhar", "Social", "Café Especial"];
-
-const CONTEXT_MAP: Record<string, string> = {
-  Estudar: "STUDY",
-  Trabalhar: "REMOTE_WORK",
-  Social: "SOCIAL",
-  "Café Especial": "COFFEE_TASTING",
-};
 
 export default function Home() {
   const router = useRouter();
   const { user } = useAuthStore();
   const insets = useSafeAreaInsets();
 
-  const [activeContext, setActiveContext] = useState("Estudar");
   const [coffees, setCoffees] = useState<CoffeeShop[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
 
-      const fetchCoffees = async () => {
+      const fetchData = async () => {
         setLoading(true);
         try {
-          const backendContext = CONTEXT_MAP[activeContext];
-          const data = await coffeeService.getByContext(backendContext);
-          if (isActive) setCoffees(data);
+          const data = await coffeeService.getByContext("STUDY");
+
+          if (isActive) {
+            const sortedByScore = data.sort(
+              (a, b) => Number(b.score) - Number(a.score),
+            );
+            setCoffees(sortedByScore);
+          }
         } catch (error) {
           console.log("Erro ao carregar cafeterias:", error);
         } finally {
@@ -68,13 +63,13 @@ export default function Home() {
         }
       };
 
-      fetchCoffees();
+      fetchData();
       fetchFavorites();
 
       return () => {
         isActive = false;
       };
-    }, [activeContext, user]),
+    }, [user]),
   );
 
   const handleFavoriteClick = async (coffeeId: string) => {
@@ -99,7 +94,6 @@ export default function Home() {
       }
     } catch (error) {
       console.log("Erro ao favoritar:", error);
-
       if (isFavorited) {
         setFavoriteIds((prev) => [...prev, coffeeId]);
       } else {
@@ -107,6 +101,11 @@ export default function Home() {
       }
     }
   };
+
+  // Filtrando os cafés baseados na barra de pesquisa por nome
+  const filteredCoffees = coffees.filter((coffee) =>
+    coffee.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const renderCoffeeCard = ({ item }: { item: CoffeeShop }) => {
     const isFavorited = favoriteIds.includes(item.id);
@@ -168,28 +167,23 @@ export default function Home() {
           <Text style={styles.greeting}>
             Olá{user ? `, ${user.name}` : ""} 👋
           </Text>
-          <Text style={styles.subtitle}>Escolha seu contexto de hoje</Text>
+          <Text style={styles.subtitle}>
+            Encontre o lugar ideal para o seu momento
+          </Text>
         </View>
 
-        <View style={styles.pillsContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {CONTEXTS.map((context) => {
-              const isActive = activeContext === context;
-              return (
-                <TouchableOpacity
-                  key={context}
-                  style={[styles.pill, isActive && styles.pillActive]}
-                  onPress={() => setActiveContext(context)}
-                >
-                  <Text
-                    style={[styles.pillText, isActive && styles.pillTextActive]}
-                  >
-                    {context}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+        {/* Barra de Pesquisa */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <Search color={COLORS.darkBrown} size={20} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar cafeteria..."
+              placeholderTextColor="rgba(65, 45, 21, 0.5)"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
         </View>
 
         {loading ? (
@@ -198,11 +192,18 @@ export default function Home() {
           </View>
         ) : (
           <FlatList
-            data={coffees}
+            data={filteredCoffees}
             keyExtractor={(item) => item.id}
             renderItem={renderCoffeeCard}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContainer}
+            ListEmptyComponent={
+              <View style={styles.emptySearchContainer}>
+                <Text style={styles.emptySearchText}>
+                  Nenhuma cafeteria encontrada com "{searchQuery}"
+                </Text>
+              </View>
+            }
           />
         )}
       </View>

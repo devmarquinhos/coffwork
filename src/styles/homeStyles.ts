@@ -12,7 +12,7 @@ export const homeStyles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     marginTop: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   greeting: {
     fontSize: 28,
@@ -24,28 +24,25 @@ export const homeStyles = StyleSheet.create({
     color: COLORS.darkBrown,
     marginTop: 4,
   },
-  pillsContainer: {
-    paddingLeft: 24,
-    marginBottom: 24,
+  searchContainer: {
+    paddingHorizontal: 24,
+    marginBottom: 20,
   },
-  pill: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: COLORS.white,
-    marginRight: 12,
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F8F8",
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: "rgba(0,0,0,0.05)",
+    paddingHorizontal: 16,
+    height: 52,
+    gap: 12,
   },
-  pillActive: {
-    backgroundColor: COLORS.mediumBrown,
-  },
-  pillText: {
-    color: COLORS.darkBrown,
-    fontWeight: "600",
-  },
-  pillTextActive: {
-    color: COLORS.white,
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: COLORS.black,
   },
   listContainer: {
     paddingHorizontal: 24,
@@ -54,9 +51,9 @@ export const homeStyles = StyleSheet.create({
   cardContainer: {
     height: 280,
     marginBottom: 24,
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
     borderRadius: 24,
     backgroundColor: COLORS.cream,
+    overflow: "hidden",
   },
   cardImage: {
     flex: 1,
@@ -121,5 +118,16 @@ export const homeStyles = StyleSheet.create({
     color: COLORS.darkBrown,
     fontWeight: "bold",
     fontSize: 14,
+  },
+  emptySearchContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 60,
+    paddingHorizontal: 24,
+  },
+  emptySearchText: {
+    fontSize: 16,
+    color: COLORS.darkBrown,
+    textAlign: "center",
   },
 });
