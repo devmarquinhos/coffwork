@@ -1,0 +1,77 @@
+import { StyleSheet } from "react-native";
+import { COLORS } from "./theme";
+
+export const profileStyles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: COLORS.white },
+  container: { flex: 1, paddingHorizontal: 24 },
+  header: { paddingTop: 20, paddingBottom: 24 },
+  headerTitle: { fontSize: 28, fontWeight: "bold", color: COLORS.black },
+  profileCard: { alignItems: "center", marginBottom: 40 },
+  avatarCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.mediumBrown,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  avatarText: { fontSize: 40, fontWeight: "bold", color: COLORS.white },
+  userName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.black,
+    marginBottom: 4,
+  },
+  userEmail: { fontSize: 16, color: COLORS.darkBrown },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: COLORS.black,
+    marginBottom: 16,
+  },
+  infoContainer: {
+    backgroundColor: "#F8F8F8",
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 40,
+  },
+  infoRow: { flexDirection: "row", alignItems: "center" },
+  infoIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(65, 45, 21, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  infoLabel: { fontSize: 13, color: COLORS.darkBrown, marginBottom: 2 },
+  infoValue: { fontSize: 16, color: COLORS.black, fontWeight: "500" },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(0,0,0,0.05)",
+    marginVertical: 16,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F8F8",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  actionButtonText: {
+    fontSize: 16,
+    color: COLORS.darkBrown,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+  logoutButton: { backgroundColor: "#FEF2F2" },
+  logoutButtonText: {
+    fontSize: 16,
+    color: "#DC2626",
+    fontWeight: "600",
+    marginLeft: 12,
+  },
+});

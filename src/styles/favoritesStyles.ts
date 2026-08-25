@@ -1,0 +1,73 @@
+import { StyleSheet } from "react-native";
+import { COLORS } from "./theme";
+
+export const favoritesStyles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: COLORS.white },
+  container: { flex: 1 },
+  header: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16 },
+  headerTitle: { fontSize: 28, fontWeight: "bold", color: COLORS.black },
+  listContent: { paddingHorizontal: 24, paddingBottom: 24, gap: 16 },
+  emptyListContent: { flexGrow: 1, justifyContent: "center" },
+  cardContainer: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+    height: 120,
+    overflow: "hidden",
+  },
+  cardImage: { width: 120, height: "100%" },
+  cardInfo: { flex: 1, padding: 16, justifyContent: "space-between" },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: COLORS.black,
+    flex: 1,
+    marginRight: 8,
+  },
+  heartButton: { marginLeft: 8 },
+  cardLocation: { fontSize: 14, color: COLORS.darkBrown, marginTop: -4 },
+  scoreBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: COLORS.cream,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  scoreText: { color: COLORS.darkBrown, fontWeight: "bold", fontSize: 12 },
+  emptyContainer: { alignItems: "center", paddingHorizontal: 40 },
+  emptyIconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "rgba(65, 45, 21, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: COLORS.black,
+    marginBottom: 12,
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    color: COLORS.darkBrown,
+    textAlign: "center",
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  exploreButton: {
+    backgroundColor: COLORS.mediumBrown,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+  },
+  exploreButtonText: { color: COLORS.cream, fontSize: 16, fontWeight: "bold" },
+});
