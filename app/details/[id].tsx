@@ -106,8 +106,25 @@ export default function CoffeeDetails() {
     try {
       await reviewService.createReview(id as string, reviewData);
       alert("Avaliação publicada com sucesso!");
+      setIsReviewModalOpen(false);
 
-      fetchReviews();
+      const updatedReviews = await reviewService.getReviewsByCoffeeShop(
+        id as string,
+      );
+      setReviews(updatedReviews);
+
+      if (updatedReviews.length > 0) {
+        const sum = updatedReviews.reduce(
+          (acc: number, curr: ReviewResponse) =>
+            acc + Number(curr.overallRating),
+          0,
+        );
+        const newAverageScore = (sum / updatedReviews.length).toFixed(1);
+
+        setCoffeeData((prev) =>
+          prev ? { ...prev, score: newAverageScore } : null,
+        );
+      }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ||
