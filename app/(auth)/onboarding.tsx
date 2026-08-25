@@ -1,13 +1,14 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    StatusBar,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { onboardingStyles as styles } from "../../src/styles/onboardingStyles";
 
@@ -52,6 +53,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -70,10 +72,24 @@ export default function OnboardingScreen() {
     return () => clearInterval(timer);
   }, [currentIndex]);
 
+  useEffect(() => {
+    if (currentIndex === SLIDES.length - 1) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
+    }
+  }, [currentIndex]);
+
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollPosition / width);
-    setCurrentIndex(index);
+    if (index !== currentIndex) {
+      setCurrentIndex(index);
+    }
   };
 
   const isLastSlide = currentIndex === SLIDES.length - 1;
@@ -95,43 +111,72 @@ export default function OnboardingScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.slide}>
-            <Image
-              source={{ uri: item.image }}
-              style={styles.slideImage}
-              resizeMode="cover"
-            />
+        renderItem={({ item, index }) => {
+          // Garante que o card renderizado corresponda exatamente ao estado atual
+          const activeCard = index === currentIndex;
 
-            <View style={styles.overlay}>
-              <View style={styles.progressContainer}>
-                {SLIDES.map((_, index) => (
-                  <View key={index} style={styles.progressBarBackground}>
-                    <View
-                      style={[
-                        styles.progressBarFill,
-                        {
-                          width: index <= currentIndex ? "100%" : "0%",
-                        },
-                      ]}
-                    />
-                  </View>
-                ))}
-              </View>
+          return (
+            <View style={styles.slide}>
+              <Image
+                source={{ uri: item.image }}
+                style={styles.slideImage}
+                resizeMode="cover"
+              />
 
-              <View style={styles.contentContainer}>
-                <View style={styles.textContainer}>
-                  <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.description}>{item.description}</Text>
+              <View style={styles.overlay}>
+                <View style={styles.topSpace} />
+
+                <View style={styles.progressContainer}>
+                  {SLIDES.map((_, i) => (
+                    <View key={i} style={styles.progressBarBackground}>
+                      <View
+                        style={[
+                          styles.progressBarFill,
+                          {
+                            width: i <= currentIndex ? "100%" : "0%",
+                          },
+                        ]}
+                      />
+                    </View>
+                  ))}
                 </View>
-              </View>
 
-              <View style={styles.footer}>
-                {isLastSlide ? (
-                  <>
+                <View style={styles.contentContainer}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.title}>{item.title}</Text>
+                    <Text style={styles.description}>{item.description}</Text>
+                  </View>
+                </View>
+
+                <View
+                  style={[
+                    styles.footer,
+                    { height: 136, justifyContent: "center" },
+                  ]}
+                >
+                  <Animated.View
+                    style={{
+                      opacity: isLastSlide ? 0 : 1,
+                      position: "absolute",
+                      width: "100%",
+                    }}
+                    pointerEvents="none"
+                  >
+                    <View style={{ height: 136 }} />
+                  </Animated.View>
+
+                  <Animated.View
+                    style={{
+                      opacity: fadeAnim,
+                      width: "100%",
+                      gap: 12,
+                      position: "absolute",
+                    }}
+                    pointerEvents={isLastSlide ? "auto" : "none"}
+                  >
                     <TouchableOpacity
                       style={styles.primaryButton}
-                      onPress={() => router.push("/login") as any}
+                      onPress={() => router.push("/(auth)/login" as any)}
                     >
                       <Text style={styles.primaryButtonText}>Fazer Login</Text>
                     </TouchableOpacity>
@@ -144,14 +189,12 @@ export default function OnboardingScreen() {
                         Criar Conta
                       </Text>
                     </TouchableOpacity>
-                  </>
-                ) : (
-                  <View style={{ height: 20 }} />
-                )}
+                  </Animated.View>
+                </View>
               </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );

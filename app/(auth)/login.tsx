@@ -2,7 +2,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { authService } from "../../src/services/authService";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { COLORS } from "../../src/styles/theme";
+import { editProfileStyles as styles } from "../../src/styles/loginStyles";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ export default function LoginScreen() {
 
       setLogin(data.user, data.token);
 
-      router.replace("/");
+      router.replace("/(tabs)" as any);
     } catch (error) {
       console.error("Erro no login:", error);
       alert("Falha ao fazer login. Verifique se a API está rodando.");
@@ -83,36 +83,15 @@ export default function LoginScreen() {
             <Text style={styles.buttonText}>Entrar</Text>
           )}
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.registerContainer}
+          onPress={() => router.push("/(auth)/register" as any)}
+        >
+          <Text style={styles.registerTextNormal}>Não tem uma conta? </Text>
+          <Text style={styles.registerTextBold}>Cadastre-se</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: COLORS.white },
-  container: { flex: 1, paddingHorizontal: 24, justifyContent: "center" },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: COLORS.black,
-    marginBottom: 8,
-  },
-  subtitle: { fontSize: 16, color: COLORS.darkBrown, marginBottom: 40 },
-  input: {
-    backgroundColor: "#F8F8F8",
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 16,
-    color: COLORS.black,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.05)",
-  },
-  button: {
-    backgroundColor: COLORS.mediumBrown,
-    padding: 18,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  buttonText: { color: COLORS.white, fontSize: 16, fontWeight: "bold" },
-});
