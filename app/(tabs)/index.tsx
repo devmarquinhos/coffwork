@@ -102,7 +102,6 @@ export default function Home() {
     }
   };
 
-  // Filtrando os cafés baseados na barra de pesquisa por nome
   const filteredCoffees = coffees.filter((coffee) =>
     coffee.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -172,7 +171,6 @@ export default function Home() {
           </Text>
         </View>
 
-        {/* Barra de Pesquisa */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
             <Search color={COLORS.darkBrown} size={20} />

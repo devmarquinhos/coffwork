@@ -18,7 +18,7 @@ import {
 import { COLORS } from "../../src/styles/theme";
 import { profileStyles as styles } from "../../src/styles/profileStyles";
 import { useAuthStore } from "../../src/store/useAuthStore";
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
 
 export default function Profile() {
   const { user, logout } = useAuthStore();
@@ -28,7 +28,7 @@ export default function Profile() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Meu Perfil</Text>
@@ -83,7 +83,7 @@ export default function Profile() {
 
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => alert("Em breve: Edição de Perfil")}
+          onPress={() => router.push("/profile/edit" as any)}
         >
           <Edit3 color={COLORS.darkBrown} size={20} />
           <Text style={styles.actionButtonText}>Editar Perfil</Text>

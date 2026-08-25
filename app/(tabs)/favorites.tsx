@@ -1,23 +1,28 @@
-import React, { useState, useCallback } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
+  Compass,
+  Heart,
+  LogIn,
+  MapPin,
+  Star
+} from "lucide-react-native";
+import { useCallback, useState } from "react";
+import {
   ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useFocusEffect } from "expo-router";
-import { Heart, Coffee } from "lucide-react-native";
-import { COLORS } from "../../src/styles/theme";
-import { favoritesStyles as styles } from "../../src/styles/favoritesStyles";
 import {
-  favoriteService,
   FavoriteResponse,
+  favoriteService,
 } from "../../src/services/favoriteService";
 import { useAuthStore } from "../../src/store/useAuthStore";
+import { favoritesStyles as styles } from "../../src/styles/favoritesStyles";
+import { COLORS } from "../../src/styles/theme";
 
 export default function Favorites() {
   const router = useRouter();
@@ -94,15 +99,21 @@ export default function Favorites() {
             <Heart
               color={COLORS.mediumBrown}
               fill={COLORS.mediumBrown}
-              size={24}
+              size={22}
             />
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.cardLocation}>📍 Ver no detalhe</Text>
+        <View style={styles.locationRow}>
+          <MapPin color={COLORS.darkBrown} size={14} />
+          <Text style={styles.cardLocation} numberOfLines={1}>
+            Ver detalhes
+          </Text>
+        </View>
 
         <View style={styles.scoreBadge}>
-          <Text style={styles.scoreText}>⭐ 4.8</Text>
+          <Star color={COLORS.darkBrown} fill={COLORS.darkBrown} size={12} />
+          <Text style={styles.scoreText}>4.8</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -111,19 +122,27 @@ export default function Favorites() {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyIconCircle}>
-        <Coffee color={COLORS.mediumBrown} size={48} />
+        {!user ? (
+          <LogIn color={COLORS.mediumBrown} size={40} />
+        ) : (
+          <Compass color={COLORS.mediumBrown} size={40} />
+        )}
       </View>
       <Text style={styles.emptyTitle}>
         {!user ? "Faça login para ver favoritos" : "Nenhum favorito ainda"}
       </Text>
       <Text style={styles.emptySubtitle}>
         {!user
-          ? "Você precisa estar logado para salvar as suas cafeterias preferidas."
-          : "Explore cafeterias na página inicial e salve seus lugares preferidos para acessá-los rápido aqui."}
+          ? "Você precisa estar logado para salvar as suas cafeterias preferidas e acessá-las rapidamente."
+          : "Explore cafeterias na página inicial e toque no ícone de coração para salvá-las aqui."}
       </Text>
       <TouchableOpacity
         style={styles.exploreButton}
-        onPress={() => (!user ? router.push("/login") : router.push("/"))}
+        onPress={() =>
+          !user
+            ? router.push("/(auth)/login" as any)
+            : router.push("/(tabs)" as any)
+        }
       >
         <Text style={styles.exploreButtonText}>
           {!user ? "Fazer Login" : "Explorar Cafés"}
