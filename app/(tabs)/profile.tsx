@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   User as UserIcon,
@@ -13,7 +7,7 @@ import {
   MapPin,
   LogOut,
   Edit3,
-  LogIn,
+  Store,
 } from "lucide-react-native";
 import { COLORS } from "../../src/styles/theme";
 import { profileStyles as styles } from "../../src/styles/profileStyles";
@@ -88,6 +82,23 @@ export default function Profile() {
           <Edit3 color={COLORS.darkBrown} size={20} />
           <Text style={styles.actionButtonText}>Editar Perfil</Text>
         </TouchableOpacity>
+
+        {user?.role === "OWNER" && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push("/owner/dashboard" as any)}
+          >
+            <Store color={COLORS.mediumBrown} size={20} />
+            <Text
+              style={[
+                styles.actionButtonText,
+                { color: COLORS.mediumBrown, fontWeight: "bold" },
+              ]}
+            >
+              Painel da Minha Cafeteria
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={[styles.actionButton, styles.logoutButton]}
