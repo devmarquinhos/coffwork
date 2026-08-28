@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -70,10 +70,6 @@ export default function RegisterScreen() {
     }
 
     try {
-      const payload = { name, email, password, city };
-
-      const response = await api.post('/auth/register', payload);
-
       Alert.alert(
         "Sucesso!",
         `Bem-vindo(a), ${name}! Conta criada com sucesso.`,

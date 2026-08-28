@@ -31,5 +31,6 @@ export interface ReviewResponse {
   context: VisitContextType;
   overallRating: number;
   comment: string | null;
+  ownerReply?: string | null;
   createdAt: string;
 }

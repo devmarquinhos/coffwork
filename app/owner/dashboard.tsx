@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -128,9 +128,7 @@ export default function OwnerDashboard() {
 
       try {
         setLoading(true);
-
         await ownerService.addHighlight(coffeeShopId, selectedUri);
-
         setHighlights([...highlights, selectedUri]);
         Alert.alert("Sucesso", "Foto do carro-chefe adicionada!");
       } catch (error: any) {
@@ -162,7 +160,6 @@ export default function OwnerDashboard() {
       return;
     }
 
-    // Trava de segurança: Garante que temos o ID do review e da cafeteria
     if (!selectedReviewId || !coffeeShopId) return;
 
     try {
@@ -220,17 +217,26 @@ export default function OwnerDashboard() {
         </Text>
 
         <View style={styles.highlightsGrid}>
-          {highlights.map((url, index) => (
-            <View key={index} style={styles.highlightCard}>
-              <Image source={{ uri: url }} style={styles.highlightImage} />
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleRemoveHighlight(index)}
-              >
-                <Trash2 color={COLORS.white} size={16} />
-              </TouchableOpacity>
-            </View>
-          ))}
+          {highlights.map((url, index) => {
+            const cacheBustedUrl = url.includes("?")
+              ? `${url}&rnd=${index}`
+              : `${url}?rnd=${index}`;
+
+            return (
+              <View key={index} style={styles.highlightCard}>
+                <Image
+                  source={{ uri: cacheBustedUrl }}
+                  style={styles.highlightImage}
+                />
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleRemoveHighlight(index)}
+                >
+                  <Trash2 color={COLORS.white} size={16} />
+                </TouchableOpacity>
+              </View>
+            );
+          })}
 
           {highlights.length < 3 && (
             <TouchableOpacity

@@ -1,56 +1,81 @@
-# Welcome to your Expo app 👋
+# Coffwork
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Coffwork é um aplicativo focado em ajudar apreciadores de café a encontrar, avaliar e salvar cafeterias com base em suas experiências.
 
-## Get started
+Em vez de avaliações genéricas de 1 a 5 estrelas, o app avalia o que realmente importa: a internet é boa para trabalhar? O ambiente é silencioso para estudar? O café especial vale o preço?
 
-1. Install dependencies
+# Principais Funcionalidades
 
-   ```bash
-   npm install
-   ```
+### 📱 Para os Usuários (Coffwork)
 
-2. Start the app
+Review Progressivo: Uma experiência de avaliação fluida em 3 etapas com animações nativas, revelando critérios mais específicos com base no contexto da visita.
 
-   ```bash
-   npx expo start
-   ```
+Detalhes da Cafeteria: Visualização de tags rápidas (Wi-Fi, Tomadas), métricas calculadas em tempo real e os destaques da casa.
 
-In the output, you'll find options to open the app in a
+Favoritos: Salve suas cafeterias preferidas.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 🏢 Para os Proprietários (Painel Owner)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Gestão de Destaques: Faça upload de até 3 fotos diretamente da galeria para definir os destaques do estabelecimento.
 
-## Get a fresh project
+Interação com Clientes: Visualize avaliações e responda aos comentários dos clientes diretamente pelo app.
 
-When you're ready, run:
+# Stack Tecnológica
 
-```bash
-npm run reset-project
+### Back-end (Beanio)
+
+- Linguagem & Framework: Java 17+ com Spring Boot
+- Dados & ORM: Spring Data JPA, Hibernate, PostgreSQL
+- Segurança: Spring Security
+- Arquitetura: RESTful API
+
+### Front-end (Coffwork)
+
+- Framework: React Native com Expo
+- Linguagem: TypeScript
+- Roteamento: Expo Router
+- Estilização & UI: Wizard Design Pattern, Lucide Icons e Animated nativa do React Native.
+- Gerenciamento de Estado: Zustand
+
+# Arquitetura e Regras de Negócio Core
+
+- Modelagem em volta de Contexto:
+As avaliações são ligadas ao motivo da visita. Um usuário avaliando como Trabalho Remoto (REMOTE_WORK) dará notas para Velocidade do Wi-Fi e Disponibilidade de Tomadas, enquanto COFFEE_TASTING focará na Qualidade do Grão e Técnica do Barista.
+
+- Cálculo de Média: O backend utiliza um bloco @Transactional no serviço de Review que recalcula a média e o total de avaliações da tabela CoffeeShop de forma segura e sempre que uma nova avaliação é criada.
+
+- Prevenção de Spam (Regra de 1 Review/Dia):
+A API bloqueia a submissão de múltiplas avaliações para a mesma cafeteria, sob o mesmo contexto, pelo mesmo usuário, no mesmo dia corrido.
+
+# Como rodar o projeto localmente
+
+### 1. Configurando o Back-end (Beanio)
+
+```
+# Clone o repositório
+git clone https://github.com/seu-usuario/coffwork-beanio.git
+
+# Entre na pasta do backend
+cd coffwork-beanio/backend
+
+# Configure as variáveis de ambiente no application.properties ou .env (Banco de dados, JWT Secret)
+# Rode a aplicação com o Maven
+./mvnw spring-boot:run
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Configurando o Front-end (Coffwork)
 
-### Other setup steps
+```
+# Entre na pasta do frontend
+cd ../frontend
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+# Instale as dependências
+npm install
+# ou
+yarn install
 
-## Learn more
+# Inicie o Expo
+npx expo start
+````
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Lembre-se de apontar a `baseURL` do `api.ts` para o IP da sua máquina local rodando o Spring Boot. Configurando no `.env` como `EXPO_PUBLIC_API_URL`.

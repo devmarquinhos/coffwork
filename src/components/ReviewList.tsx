@@ -1,5 +1,4 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { Star, User } from "lucide-react-native";
 import { COLORS } from "../styles/theme";
 import { reviewListStyles as styles } from "../styles/reviewListStyles";
@@ -61,6 +60,33 @@ export function ReviewList({ reviews }: ReviewListProps) {
             {review.comment ? (
               <Text style={styles.comment}>{review.comment}</Text>
             ) : null}
+
+            {review.ownerReply && (
+              <View
+                style={{
+                  marginTop: 12,
+                  padding: 12,
+                  backgroundColor: "#F5F5F5",
+                  borderRadius: 8,
+                  borderLeftWidth: 3,
+                  borderLeftColor: COLORS.mediumBrown,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: "bold",
+                    color: COLORS.darkBrown,
+                    marginBottom: 4,
+                  }}
+                >
+                  Resposta do Proprietário:
+                </Text>
+                <Text style={{ fontSize: 14, color: COLORS.darkBrown }}>
+                  {review.ownerReply}
+                </Text>
+              </View>
+            )}
           </View>
         );
       })}

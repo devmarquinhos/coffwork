@@ -111,9 +111,7 @@ export default function OnboardingScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          // Garante que o card renderizado corresponda exatamente ao estado atual
-          const activeCard = index === currentIndex;
+        renderItem={({ item }) => {
 
           return (
             <View style={styles.slide}>

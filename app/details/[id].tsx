@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import {
@@ -59,7 +60,7 @@ export default function CoffeeDetails() {
           const data = await coffeeService.getById(id as string);
           if (isActive) setCoffeeData(data);
         } catch (error) {
-          alert("Não foi possível carregar os detalhes.");
+          Alert.alert("Erro", "Não foi possível carregar os detalhes.");
           router.back();
         } finally {
           if (isActive) setLoading(false);
@@ -87,7 +88,7 @@ export default function CoffeeDetails() {
 
   const handleFavoriteClick = async () => {
     if (!user) {
-      alert("Faça login para salvar!");
+      Alert.alert("Atenção", "Faça login para salvar!");
       router.push("/login");
       return;
     }
@@ -102,10 +103,27 @@ export default function CoffeeDetails() {
     }
   };
 
+  const handleOpenReviewModal = () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (coffeeData?.ownerId === user.id) {
+      Alert.alert(
+        "Ação não permitida",
+        "Você não pode avaliar seu próprio estabelecimento.",
+      );
+      return;
+    }
+
+    setIsReviewModalOpen(true);
+  };
+
   const handleReviewSubmit = async (reviewData: ReviewFormState) => {
     try {
       await reviewService.createReview(id as string, reviewData);
-      alert("Avaliação publicada com sucesso!");
+      Alert.alert("Sucesso", "Avaliação publicada com sucesso!");
       setIsReviewModalOpen(false);
 
       const updatedReviews = await reviewService.getReviewsByCoffeeShop(
@@ -129,7 +147,7 @@ export default function CoffeeDetails() {
       const errorMessage =
         error.response?.data?.message ||
         "Ocorreu um erro ao enviar sua avaliação.";
-      alert(errorMessage);
+      Alert.alert("Erro", errorMessage);
     }
   };
 
@@ -223,6 +241,38 @@ export default function CoffeeDetails() {
             {coffeeData?.shortDescription || "Nenhuma descrição disponível."}
           </Text>
 
+          {coffeeData?.specialtyHighlights &&
+            coffeeData.specialtyHighlights.length > 0 && (
+              <View style={{ marginBottom: 24 }}>
+                <Text style={styles.sectionTitle}>Mais pedidos</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 12, paddingRight: 24 }}
+                >
+                  {coffeeData.specialtyHighlights.map((imageUrl, index) => {
+                    const cacheBustedUrl = imageUrl.includes("?")
+                      ? `${imageUrl}&rnd=${index}`
+                      : `${imageUrl}?rnd=${index}`;
+
+                    return (
+                      <Image
+                        key={index}
+                        source={{ uri: cacheBustedUrl }}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          borderRadius: 12,
+                          backgroundColor: "#eee",
+                        }}
+                        resizeMode="cover"
+                      />
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            )}
+
           <Text style={styles.sectionTitle}>Avaliações</Text>
 
           <ReviewList reviews={reviews} />
@@ -232,9 +282,7 @@ export default function CoffeeDetails() {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() =>
-            user ? setIsReviewModalOpen(true) : router.push("/login")
-          }
+          onPress={handleOpenReviewModal}
         >
           <Text style={styles.primaryButtonText}>Avaliar Experiência</Text>
         </TouchableOpacity>

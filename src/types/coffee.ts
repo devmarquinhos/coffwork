@@ -7,4 +7,6 @@ export interface CoffeeShopDetails {
   shortDescription: string;
   hasWifi: boolean;
   hasPowerOutlets: boolean;
+  specialtyHighlights: string[];
+  ownerId: string;
 }

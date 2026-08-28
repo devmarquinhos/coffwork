@@ -1,4 +1,3 @@
-import React from "react";
 import { Tabs } from "expo-router";
 import { Home, Heart, User } from "lucide-react-native";
 import { COLORS } from "../../src/styles/theme";
