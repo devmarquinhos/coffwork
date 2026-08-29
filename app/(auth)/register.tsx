@@ -20,8 +20,8 @@ import {
   Lock,
   MapPin,
   User,
+  Store,
 } from "lucide-react-native";
-import { api } from "@/services/api";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -208,6 +208,28 @@ export default function RegisterScreen() {
                 <Check color={COLORS.cream} size={20} />
               </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: 16,
+                gap: 8,
+              }}
+              onPress={() => router.push("/owner-register" as any)}
+            >
+              <Store color={COLORS.cream} size={18} />
+              <Text
+                style={{
+                  color: COLORS.cream,
+                  fontWeight: "600",
+                  textDecorationLine: "underline",
+                }}
+              >
+                Possui uma cafeteria? Cadastre aqui
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>

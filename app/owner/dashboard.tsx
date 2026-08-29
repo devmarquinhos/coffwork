@@ -210,7 +210,7 @@ export default function OwnerDashboard() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionTitle}>Carro-Chefe (Até 3 fotos)</Text>
+        <Text style={styles.sectionTitle}>Destaques (Até 3 fotos)</Text>
         <Text style={styles.sectionSubtitle}>
           Destaque os principais produtos da sua cafeteria ({highlights.length}
           /3)
@@ -334,7 +334,7 @@ export default function OwnerDashboard() {
             <Text style={styles.modalTitle}>Responder Cliente</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Escreva sua resposta oficial..."
+              placeholder="Escreva sua resposta..."
               placeholderTextColor={COLORS.mediumBrown}
               multiline
               value={replyText}

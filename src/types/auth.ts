@@ -1,11 +1,11 @@
-export type UserRole = 'USER' | 'ADMIN' | 'OWNER';
+export type UserRole = "USER" | "OWNER" | "ADMIN";
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  city: string;
-  role: UserRole;
+  city?: string;
+  role?: UserRole;
 }
 
 export interface AuthState {
@@ -17,5 +17,5 @@ export interface AuthState {
 export interface AuthActions {
   login: (user: User, token: string) => void;
   logout: () => void;
-  updateUser: (user: Partial<User>) => void;
+  updateUser: (updatedData: Partial<User>) => void;
 }

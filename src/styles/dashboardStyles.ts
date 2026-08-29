@@ -15,8 +15,6 @@ export const dashboardStyles = StyleSheet.create({
   iconButton: { padding: 4 },
   headerTitle: { fontSize: 18, fontWeight: "bold", color: COLORS.black },
   container: { padding: 24, paddingBottom: 40 },
-
-  // Estilos da nova linha de cabeçalho das avaliações
   sectionHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",

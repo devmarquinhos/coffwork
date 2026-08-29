@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthState, AuthActions } from '../types/auth';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthState, AuthActions } from "../types/auth";
 
 type AuthStore = AuthState & AuthActions;
 
@@ -12,11 +12,19 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       isAuthenticated: false,
 
-      login: (user, token) => 
-        set({ user, token, isAuthenticated: true }),
+      login: (user, token) =>
+        set({
+          user,
+          token,
+          isAuthenticated: true,
+        }),
 
-      logout: () => 
-        set({ user: null, token: null, isAuthenticated: false }),
+      logout: () =>
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+        }),
 
       updateUser: (updatedData) =>
         set((state) => ({
@@ -24,8 +32,8 @@ export const useAuthStore = create<AuthStore>()(
         })),
     }),
     {
-      name: 'coffwork-auth-storage',
+      name: "coffwork-auth-storage",
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );
