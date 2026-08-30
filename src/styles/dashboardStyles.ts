@@ -50,7 +50,26 @@ export const dashboardStyles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.black,
   },
-
+  statsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.mediumBrown,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statsButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
   highlightsGrid: {
     flexDirection: "row",
     gap: 12,
