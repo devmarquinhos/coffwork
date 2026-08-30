@@ -10,6 +10,19 @@ export interface RegisterUserDTO {
   role: User["role"];
 }
 
+export interface MonthlyAverage {
+  month: string;
+  average: number;
+}
+
+export interface CoffeeShopStatistics {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: Record<string, number>;
+  contextStatistics: Record<string, Record<string, number>>;
+  monthlyAverage: MonthlyAverage[];
+}
+
 export interface CoffeeShopDTO {
   name: string;
   shortDescription?: string;
@@ -83,5 +96,10 @@ export const ownerService = {
     await api.post(`/coffee-shops/${coffeeShopId}/reviews/${reviewId}/reply`, {
       replyText,
     });
+  },
+
+  async getStatistics(coffeeShopId: string): Promise<CoffeeShopStatistics> {
+    const response = await api.get(`/coffee-shops/${coffeeShopId}/statistics`);
+    return response.data;
   },
 };

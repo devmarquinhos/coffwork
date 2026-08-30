@@ -21,6 +21,7 @@ import {
   Trash2,
   MessageSquare,
   Star,
+  BarChart2,
 } from "lucide-react-native";
 import { ownerService } from "../../src/services/ownerService";
 import { api } from "@/services/api";
@@ -255,6 +256,16 @@ export default function OwnerDashboard() {
             </TouchableOpacity>
           )}
         </View>
+
+        <TouchableOpacity
+          style={styles.statsButton}
+          onPress={() =>
+            router.push(`/owner/statistics?shopId=${coffeeShopId}` as any)
+          }
+        >
+          <BarChart2 color={COLORS.cream} size={20} />
+          <Text style={styles.statsButtonText}>Análise da Cafeteria</Text>
+        </TouchableOpacity>
 
         <View style={styles.sectionHeaderRow}>
           <View>
