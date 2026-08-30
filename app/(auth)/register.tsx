@@ -22,6 +22,7 @@ import {
   User,
   Store,
 } from "lucide-react-native";
+import { authService } from "../../src/services/authService";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [city, setCity] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -70,16 +72,29 @@ export default function RegisterScreen() {
     }
 
     try {
+      setLoading(true);
+
+      await authService.register({
+        name,
+        email,
+        password,
+        city,
+        role: "USER",
+      });
+
       Alert.alert(
         "Sucesso!",
         `Bem-vindo(a), ${name}! Conta criada com sucesso.`,
       );
-      router.replace("/(tabs)" as any);
+
+      router.replace("/login" as any);
     } catch (error) {
       Alert.alert(
         "Erro",
-        "Não foi possível realizar o cadastro. Tente novamente.",
+        "Não foi possível realizar o cadastro. O e-mail pode já estar em uso.",
       );
+    } finally {
+      setLoading(false);
     }
   };
 
