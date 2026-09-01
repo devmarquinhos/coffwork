@@ -31,14 +31,13 @@ import {
   DollarSign,
   Heart,
 } from "lucide-react-native";
-import {
-  ownerService,
-  CoffeeShopStatistics,
-} from "@/services/ownerService";
+import { ownerService, CoffeeShopStatistics } from "@/services/ownerService";
 import { COLORS } from "@/styles/theme";
 import { statisticsStyles as styles } from "@/styles/statisticsStyles";
 import { ShopBadges } from "@/components/shopBadges";
 import { WorkabilityScore } from "@/components/WorkabilityScore";
+import { Share } from "react-native";
+import { Share2 } from "lucide-react-native";
 
 export default function StatisticsScreen() {
   const { shopId } = useLocalSearchParams();
@@ -135,16 +134,36 @@ export default function StatisticsScreen() {
     }
   };
 
+  const handleShareStats = async () => {
+    try {
+      await Share.share({
+        message: `☕ Confira o desempenho da nossa cafeteria no Coffwork!\nNota média: ${stats.averageRating.toFixed(1)} ⭐ com ${stats.totalReviews} avaliações.`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const contextData = stats.contextStatistics[selectedContext] || {};
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.headerSideButton}
+        >
           <ArrowLeft color={COLORS.white} size={24} />
         </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Análise da Cafeteria</Text>
-        <View style={{ width: 24 }} />
+
+        <TouchableOpacity
+          onPress={handleShareStats}
+          style={styles.headerSideButton}
+        >
+          <Share2 color={COLORS.white} size={20} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
