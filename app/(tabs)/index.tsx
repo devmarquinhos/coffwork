@@ -27,6 +27,7 @@ export default function Home() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeVibe, setActiveVibe] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {

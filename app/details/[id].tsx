@@ -28,6 +28,7 @@ import { CoffeeShopDetails } from "@/types/coffee";
 import { ReviewFormState, ReviewResponse } from "@/types/review";
 import { ReviewModal } from "@/components/ReviewModal";
 import { ReviewList } from "@/components/ReviewList";
+import { BatterySimulator } from "@/components/BatterySimulator";
 
 export default function CoffeeDetails() {
   const { id } = useLocalSearchParams();
@@ -272,6 +273,8 @@ export default function CoffeeDetails() {
                 </ScrollView>
               </View>
             )}
+
+          <BatterySimulator contextStatistics={(coffeeData as any)?.contextStatistics || {}} />
 
           <Text style={styles.sectionTitle}>Avaliações</Text>
 
