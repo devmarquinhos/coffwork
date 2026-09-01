@@ -11,14 +11,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FavoriteResponse, favoriteService } from "@/services/favoriteService";
+import { coffeeService } from "@/services/coffeeService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { favoritesStyles as styles } from "@/styles/favoritesStyles";
 import { COLORS } from "@/styles/theme";
 
+type FavoriteListItem = FavoriteResponse & {
+  score?: string;
+  location?: string;
+};
+
 export default function Favorites() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [favorites, setFavorites] = useState<FavoriteResponse[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
@@ -33,10 +39,34 @@ export default function Favorites() {
         }
 
         setLoading(true);
+
         try {
-          const data = await favoriteService.getMyFavorites();
+          const favoriteData = await favoriteService.getMyFavorites();
+
+          const enrichedFavorites = await Promise.all(
+            favoriteData.map(async (item) => {
+              try {
+                const coffeeDetails = await coffeeService.getById(
+                  item.coffeeShopId,
+                );
+
+                return {
+                  ...item,
+                  score: coffeeDetails.score,
+                  location: coffeeDetails.location,
+                };
+              } catch (error) {
+                return {
+                  ...item,
+                  score: "0.0",
+                  location: "Localização indisponível",
+                };
+              }
+            }),
+          );
+
           if (isActive) {
-            setFavorites(data);
+            setFavorites(enrichedFavorites);
           }
         } catch (error) {
           console.log("Erro ao carregar aba de favoritos silencioso.");
@@ -63,7 +93,7 @@ export default function Favorites() {
     }
   };
 
-  const renderFavoriteItem = ({ item }: { item: FavoriteResponse }) => (
+  const renderFavoriteItem = ({ item }: { item: FavoriteListItem }) => (
     <TouchableOpacity
       style={styles.cardContainer}
       activeOpacity={0.8}
@@ -98,13 +128,13 @@ export default function Favorites() {
         <View style={styles.locationRow}>
           <MapPin color={COLORS.darkBrown} size={14} />
           <Text style={styles.cardLocation} numberOfLines={1}>
-            Ver detalhes
+            {item.location ?? "Localização indisponível"}
           </Text>
         </View>
 
         <View style={styles.scoreBadge}>
           <Star color={COLORS.darkBrown} fill={COLORS.darkBrown} size={12} />
-          <Text style={styles.scoreText}>4.8</Text>
+          <Text style={styles.scoreText}>{item.score ?? "0.0"}</Text>
         </View>
       </View>
     </TouchableOpacity>
