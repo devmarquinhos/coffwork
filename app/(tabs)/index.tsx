@@ -109,6 +109,8 @@ export default function Home() {
 
   const renderCoffeeCard = ({ item }: { item: CoffeeShop }) => {
     const isFavorited = favoriteIds.includes(item.id);
+    const scoreNum = Number(item.score);
+    const isTopRated = scoreNum >= 4.5;
 
     return (
       <TouchableOpacity
@@ -123,6 +125,16 @@ export default function Home() {
           style={styles.cardImage}
           imageStyle={styles.cardImageStyle}
         >
+          {isTopRated && (
+            <View style={styles.topBadge}>
+              <Star
+                color={COLORS.darkBrown}
+                fill={COLORS.darkBrown}
+                size={12}
+              />
+              <Text style={styles.topBadgeText}>Top Escolha</Text>
+            </View>
+          )}
           <TouchableOpacity
             style={styles.favoriteButton}
             onPress={() => handleFavoriteClick(item.id)}
