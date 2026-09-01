@@ -1,6 +1,6 @@
-import { api } from "./api";
-import { useAuthStore } from "../store/useAuthStore";
-import { User } from "../types/auth";
+import { api } from "@/services/api";
+import { useAuthStore } from "@/store/useAuthStore";
+import { User } from "@/types/auth";
 
 export interface RegisterUserDTO {
   name: string;

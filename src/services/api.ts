@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { Platform } from 'react-native';
 
 const getBaseUrl = () => {

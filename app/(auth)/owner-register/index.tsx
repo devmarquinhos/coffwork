@@ -30,9 +30,9 @@ import {
   Clock,
 } from "lucide-react-native";
 
-import { COLORS } from "../../../src/styles/theme";
-import { styles } from "../../../src/styles/ownerRegistrationStyles";
-import { ownerService } from "../../../src/services/ownerService";
+import { COLORS } from "@/styles/theme";
+import { styles } from "@/styles/ownerRegistrationStyles";
+import { ownerService } from "@/services/ownerService";
 
 export default function OwnerRegisterWizard() {
   const router = useRouter();

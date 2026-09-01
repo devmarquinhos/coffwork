@@ -18,16 +18,16 @@ import {
   Plug,
   MapPin,
 } from "lucide-react-native";
-import { COLORS } from "../../src/styles/theme";
-import { coffeeDetailsStyles as styles } from "../../src/styles/coffeeDetailsStyles";
-import { useAuthStore } from "../../src/store/useAuthStore";
-import { favoriteService } from "../../src/services/favoriteService";
-import { coffeeService } from "../../src/services/coffeeService";
-import { reviewService } from "../../src/services/reviewService";
-import { CoffeeShopDetails } from "../../src/types/coffee";
-import { ReviewFormState, ReviewResponse } from "../../src/types/review";
-import { ReviewModal } from "../../src/components/ReviewModal";
-import { ReviewList } from "../../src/components/ReviewList";
+import { COLORS } from "@/styles/theme";
+import { coffeeDetailsStyles as styles } from "@/styles/coffeeDetailsStyles";
+import { useAuthStore } from "@/store/useAuthStore";
+import { favoriteService } from "@/services/favoriteService";
+import { coffeeService } from "@/services/coffeeService";
+import { reviewService } from "@/services/reviewService";
+import { CoffeeShopDetails } from "@/types/coffee";
+import { ReviewFormState, ReviewResponse } from "@/types/review";
+import { ReviewModal } from "@/components/ReviewModal";
+import { ReviewList } from "@/components/ReviewList";
 
 export default function CoffeeDetails() {
   const { id } = useLocalSearchParams();

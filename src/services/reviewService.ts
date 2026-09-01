@@ -1,5 +1,5 @@
-import { api } from './api';
-import { ReviewFormState } from '../types/review';
+import { api } from '@/services/api';
+import { ReviewFormState } from '@/types/review';
 
 export const reviewService = {
   createReview: async (coffeeShopId: string, reviewData: ReviewFormState) => {

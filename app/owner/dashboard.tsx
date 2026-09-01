@@ -13,8 +13,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../../src/styles/theme";
-import { dashboardStyles as styles } from "../../src/styles/dashboardStyles";
+import { COLORS } from "@/styles/theme";
+import { dashboardStyles as styles } from "@/styles/dashboardStyles";
 import {
   ArrowLeft,
   Plus,
@@ -23,7 +23,7 @@ import {
   Star,
   BarChart2,
 } from "lucide-react-native";
-import { ownerService } from "../../src/services/ownerService";
+import { ownerService } from "@/services/ownerService";
 import { api } from "@/services/api";
 import * as ImagePicker from "expo-image-picker";
 

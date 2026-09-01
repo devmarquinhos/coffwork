@@ -11,11 +11,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "../../src/styles/theme";
-import { editProfileStyles as styles } from "../../src/styles/editProfileStyles";
+import { COLORS } from "@/styles/theme";
+import { editProfileStyles as styles } from "@/styles/editProfileStyles";
 import { ArrowLeft, User, MapPin, Check } from "lucide-react-native";
-import { useAuthStore } from "../../src/store/useAuthStore";
-import { userService } from "../../src/services/userService";
+import { useAuthStore } from "@/store/useAuthStore";
+import { userService } from "@/services/userService";
 
 export default function EditProfileScreen() {
   const router = useRouter();

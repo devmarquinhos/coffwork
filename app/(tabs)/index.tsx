@@ -10,13 +10,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS } from "../../src/styles/theme";
-import { homeStyles as styles } from "../../src/styles/homeStyles";
+import { COLORS } from "@/styles/theme";
+import { homeStyles as styles } from "@/styles/homeStyles";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Heart, MapPin, Star, Search } from "lucide-react-native";
-import { useAuthStore } from "../../src/store/useAuthStore";
-import { CoffeeShop, coffeeService } from "../../src/services/coffeeService";
-import { favoriteService } from "../../src/services/favoriteService";
+import { CoffeeShop, coffeeService } from "@/services/coffeeService";
+import { favoriteService } from "@/services/favoriteService";
 
 export default function Home() {
   const router = useRouter();

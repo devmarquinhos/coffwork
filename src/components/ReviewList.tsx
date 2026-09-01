@@ -1,8 +1,8 @@
-import { View, Text } from "react-native";
 import { Star, User } from "lucide-react-native";
-import { COLORS } from "../styles/theme";
-import { reviewListStyles as styles } from "../styles/reviewListStyles";
-import { ReviewResponse } from "../types/review";
+import { Text, View } from "react-native";
+import { reviewListStyles as styles } from "@/styles/reviewListStyles";
+import { COLORS } from "@/styles/theme";
+import { ReviewResponse } from "@/types/review";
 
 const CONTEXT_LABELS: Record<string, string> = {
   STUDY: "Estudar",

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
-import { useAuthStore } from "../src/store/useAuthStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function RootLayout() {
   const { user } = useAuthStore();

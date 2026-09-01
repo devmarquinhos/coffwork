@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthState, AuthActions } from "../types/auth";
+import { AuthState, AuthActions } from "@/types/auth";
 
 type AuthStore = AuthState & AuthActions;
 

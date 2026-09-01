@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  ScrollView,
-  Animated,
-} from "react-native";
 import { Star } from "lucide-react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+    Animated,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS } from "../styles/theme";
-import { reviewModalStyles as styles } from "../styles/reviewModalStyles";
-import { ReviewFormState } from "../types/review";
+import { reviewModalStyles as styles } from "@/styles/reviewModalStyles";
+import { COLORS } from "@/styles/theme";
+import { ReviewFormState } from "@/types/review";
 
 const CONTEXT_OPTIONS = [
   { label: "Estudar", value: "STUDY" },

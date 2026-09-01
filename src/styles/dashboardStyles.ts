@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "./theme";
+import { COLORS } from "@/styles/theme";
 
 export const dashboardStyles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: COLORS.white },

@@ -8,9 +8,9 @@ import {
   Edit3,
   Store,
 } from "lucide-react-native";
-import { COLORS } from "../../src/styles/theme";
-import { profileStyles as styles } from "../../src/styles/profileStyles";
-import { useAuthStore } from "../../src/store/useAuthStore";
+import { COLORS } from "@/styles/theme";
+import { profileStyles as styles } from "@/styles/profileStyles";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Redirect, router } from "expo-router";
 
 export default function Profile() {

@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { Home, Heart, User } from "lucide-react-native";
-import { COLORS } from "../../src/styles/theme";
+import { COLORS } from "@/styles/theme";
 
 export default function Layout() {
   return (

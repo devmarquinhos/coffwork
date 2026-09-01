@@ -34,9 +34,11 @@ import {
 import {
   ownerService,
   CoffeeShopStatistics,
-} from "../../src/services/ownerService";
-import { COLORS } from "../../src/styles/theme";
-import { statisticsStyles as styles } from "../../src/styles/statisticsStyles";
+} from "@/services/ownerService";
+import { COLORS } from "@/styles/theme";
+import { statisticsStyles as styles } from "@/styles/statisticsStyles";
+import { ShopBadges } from "@/components/shopBadges";
+import { WorkabilityScore } from "@/components/WorkabilityScore";
 
 export default function StatisticsScreen() {
   const { shopId } = useLocalSearchParams();
@@ -173,7 +175,11 @@ export default function StatisticsScreen() {
               <Text style={styles.overviewLabel}>Avaliações</Text>
             </View>
           </View>
+
+          <ShopBadges contextStatistics={stats.contextStatistics} />
         </View>
+
+        <WorkabilityScore contextStatistics={stats.contextStatistics} />
 
         <View style={styles.card}>
           <View

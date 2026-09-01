@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api } from '@/services/api';
 import { isAxiosError } from 'axios';
 
 export interface FavoriteResponse {

@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "../../src/styles/theme";
-import { registerStyles as styles } from "../../src/styles/registerStyles";
+import { authService } from "@/services/authService";
+import { COLORS } from "@/styles/theme";
+import { registerStyles as styles } from "@/styles/registerStyles";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,7 +23,6 @@ import {
   User,
   Store,
 } from "lucide-react-native";
-import { authService } from "../../src/services/authService";
 
 export default function RegisterScreen() {
   const router = useRouter();

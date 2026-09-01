@@ -8,10 +8,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { authService } from "../../src/services/authService";
-import { useAuthStore } from "../../src/store/useAuthStore";
-import { COLORS } from "../../src/styles/theme";
-import { editProfileStyles as styles } from "../../src/styles/loginStyles";
+import { authService } from "@/services/authService";
+import { useAuthStore } from "@/store/useAuthStore";
+import { COLORS } from "@/styles/theme";
+import { editProfileStyles as styles } from "@/styles/loginStyles";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");

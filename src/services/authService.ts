@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { User } from "../types/auth";
+import { User } from "@/types/auth";
 
 interface LoginRequest {
   email: string;

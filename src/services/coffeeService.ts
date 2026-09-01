@@ -1,5 +1,5 @@
 import { CoffeeShopDetails } from '@/types/coffee';
-import { api } from './api';
+import { api } from '@/services/api';
 
 export interface CoffeeShop {
   id: string;

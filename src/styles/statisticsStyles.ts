@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "./theme";
+import { COLORS } from "@/styles/theme";
 
 export const statisticsStyles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.darkBrown },

@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { onboardingStyles as styles } from "../../src/styles/onboardingStyles";
+import { onboardingStyles as styles } from "@/styles/onboardingStyles";
 
 const { width } = Dimensions.get("window");
 

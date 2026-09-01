@@ -19,10 +19,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   FavoriteResponse,
   favoriteService,
-} from "../../src/services/favoriteService";
-import { useAuthStore } from "../../src/store/useAuthStore";
-import { favoritesStyles as styles } from "../../src/styles/favoritesStyles";
-import { COLORS } from "../../src/styles/theme";
+} from "@/services/favoriteService";
+import { useAuthStore } from "@/store/useAuthStore";
+import { favoritesStyles as styles } from "@/styles/favoritesStyles";
+import { COLORS } from "@/styles/theme";
 
 export default function Favorites() {
   const router = useRouter();
