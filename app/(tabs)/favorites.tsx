@@ -1,11 +1,5 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import {
-  Compass,
-  Heart,
-  LogIn,
-  MapPin,
-  Star
-} from "lucide-react-native";
+import { Compass, Heart, LogIn, MapPin, Star } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,10 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  FavoriteResponse,
-  favoriteService,
-} from "@/services/favoriteService";
+import { FavoriteResponse, favoriteService } from "@/services/favoriteService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { favoritesStyles as styles } from "@/styles/favoritesStyles";
 import { COLORS } from "@/styles/theme";
